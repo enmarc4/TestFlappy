@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sky Circuits: Tactical Flap. Un arcade de reflejos y decisiones tácticas con power-ups, heat management y dificultad dinámica."
+    />
+    <title>Sky Circuits: Tactical Flap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=Chakra+Petch:wght@500;700&family=Sora:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a" aria-hidden="true"></div>
+    <div class="bg-orb orb-b" aria-hidden="true"></div>
+
+    <div class="site-shell">
+      <header class="hero" id="top">
+        <div class="hero-copy">
+          <p class="hero-kicker">Arcade táctico aéreo</p>
+          <h1>Sky Circuits <span>Tactical Flap</span></h1>
+          <p>
+            No se trata solo de esquivar obstáculos. Cada run combina precisión, lectura del ritmo y
+            gestión de calor para decidir cuándo atacar con power-ups y cuándo conservar energía.
+          </p>
+          <div class="hero-actions">
+            <a href="#play-zone" class="btn btn-primary">Entrar a la partida</a>
+            <a href="#feature-grid" class="btn btn-ghost">Ver mecánicas</a>
+          </div>
+          <ul class="hero-highlights">
+            <li>
+              <strong>3</strong>
+              <span>Power-ups tácticos</span>
+            </li>
+            <li>
+              <strong>60 FPS</strong>
+              <span>Simulación estable</span>
+            </li>
+            <li>
+              <strong>∞</strong>
+              <span>Runs con escalado dinámico</span>
+            </li>
+          </ul>
+        </div>
+
+        <aside class="hero-panel" aria-label="Resumen de mecánicas">
+          <h2>Diferencial de gameplay</h2>
+          <ul class="tag-list">
+            <li>Pulse Shield</li>
+            <li>Gap Widen</li>
+            <li>Flux Boost</li>
+            <li>Heat Meter</li>
+            <li>Risk Routing</li>
+            <li>Overheat Control</li>
+          </ul>
+          <p>
+            Sky Circuits transforma el bucle clásico con una capa de decisiones en tiempo real: usar o
+            guardar recursos cambia totalmente el tempo de la partida.
+          </p>
+        </aside>
+      </header>
+
+      <main class="landing-content">
+        <section class="feature-grid" id="feature-grid" aria-label="Características principales">
+          <article class="feature-card">
+            <h3>Riesgo recompensado</h3>
+            <p>
+              Las cargas aparecen en rutas peligrosas. Si juegas al límite, acumulas ventaja táctica.
+            </p>
+          </article>
+          <article class="feature-card">
+            <h3>Heat como recurso</h3>
+            <p>
+              El motor se sobrecalienta si abusas del flap. Controlar ese umbral define las runs largas.
+            </p>
+          </article>
+          <article class="feature-card">
+            <h3>Escalada viva</h3>
+            <p>
+              El ritmo acelera por fases, no por picos bruscos. Exige adaptación continua y decisiones
+              limpias.
+            </p>
+          </article>
+        </section>
+
+        <section class="flow-strip" aria-label="Flujo de juego">
+          <div class="flow-step">
+            <span>01</span>
+            <h3>Flap y lectura</h3>
+            <p>Mantén altura y anticipa gaps para no gastar recursos antes de tiempo.</p>
+          </div>
+          <div class="flow-step">
+            <span>02</span>
+            <h3>Acumula cargas</h3>
+            <p>Recoge energía en trayectorias de riesgo para habilitar jugadas ofensivas.</p>
+          </div>
+          <div class="flow-step">
+            <span>03</span>
+            <h3>Activa poder</h3>
+            <p>Lanza power-ups en ventanas críticas y rompe segmentos de alta presión.</p>
+          </div>
+          <div class="flow-step">
+            <span>04</span>
+            <h3>Sobrevive al late game</h3>
+            <p>En fases finales, precisión y gestión de calor pesan más que la velocidad.</p>
+          </div>
+        </section>
+
+        <section class="play-zone" id="play-zone">
+          <div class="play-heading">
+            <h2>Demo jugable</h2>
+            <p>
+              Controles: <strong>Space / Tap</strong> para flap, <strong>Shift / Botón</strong> para
+              power, <strong>R</strong> para reinicio y <strong>F</strong> para fullscreen.
+            </p>
+          </div>
+          <div class="game-shell">
+            <canvas id="game-canvas" aria-label="Sky Circuits game canvas"></canvas>
+            <button id="power-btn" type="button" aria-label="Activar power-up">Power</button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Sky Circuits · Tactical Flap</p>
+        <a href="#top">Volver arriba</a>
+      </footer>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

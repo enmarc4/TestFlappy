@@ -1,0 +1,1 @@
+{"mode":"gameover","time":0.72,"coordSystem":"origin-top-left, +x right, +y down, units in CSS pixels","player":{"x":285.6,"y":564.9,"vx":0,"vy":620,"r":16},"obstacles":[{"x":1012.8,"w":91.8,"gapY":178.2,"gapH":192}],"collectibles":[],"activePowerUp":null,"charges":0,"heat":0,"overheatTimeLeft":0,"score":0,"highScore":0,"phase":1,"controlsHint":"Inicia con click/tap o Space."}

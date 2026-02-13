@@ -1,0 +1,520 @@
+{
+  "steps": [
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 930,
+      "mouse_y": 500
+    },
+    {
+      "buttons": [],
+      "frames": 2
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 930,
+      "mouse_y": 500
+    },
+    {
+      "buttons": [],
+      "frames": 2
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 930,
+      "mouse_y": 500
+    },
+    {
+      "buttons": [],
+      "frames": 2
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 11
+    },
+    {
+      "buttons": [
+        "left_mouse_button"
+      ],
+      "frames": 1,
+      "mouse_x": 250,
+      "mouse_y": 230
+    },
+    {
+      "buttons": [],
+      "frames": 10
+    }
+  ]
+}

@@ -103,6 +103,11 @@ export function startGame(state) {
     return;
   }
 
+  if (state.mode === "paused") {
+    state.mode = "playing";
+    return;
+  }
+
   resetRound(state, "playing");
 }
 
@@ -140,6 +145,21 @@ function consumeShield(state) {
 
 function activateOverheat(state) {
   state.overheatTimer = GAME_CONFIG.powerUps.overheatDuration;
+}
+
+
+export function togglePause(state) {
+  if (state.mode === "playing") {
+    state.mode = "paused";
+    return true;
+  }
+
+  if (state.mode === "paused") {
+    state.mode = "playing";
+    return true;
+  }
+
+  return false;
 }
 
 export function tryActivatePowerUp(state) {
@@ -498,7 +518,7 @@ export function restartFromGameOver(state) {
 export function getTextSnapshot(state) {
   const controlsHint =
     state.mode === "playing"
-      ? "Desktop: Space=flap, Shift=power, F=fullscreen. Movil: tap=flap, boton Power=power."
+      ? "Desktop: Space=flap, Shift=power, P=pausa, F=fullscreen. Movil: tap=flap, boton Power=power."
       : "Inicia con click/tap o Space.";
 
   return {

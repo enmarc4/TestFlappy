@@ -7,7 +7,16 @@ function isTypingElement(target) {
   return tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable;
 }
 
-export function setupInput({ state, canvas, powerButton, onFlap, onPower, onRestart, onToggleFullscreen }) {
+export function setupInput({
+  state,
+  canvas,
+  powerButton,
+  onFlap,
+  onPower,
+  onRestart,
+  onTogglePause,
+  onToggleFullscreen,
+}) {
   function usePrimaryAction() {
     if (state.mode === "gameover") {
       onFlap();
@@ -37,6 +46,12 @@ export function setupInput({ state, canvas, powerButton, onFlap, onPower, onRest
     if (event.code === "KeyR") {
       event.preventDefault();
       onRestart();
+      return;
+    }
+
+    if (event.code === "KeyP") {
+      event.preventDefault();
+      onTogglePause();
       return;
     }
 

@@ -117,13 +117,25 @@
             <h2>Demo jugable</h2>
             <p>
               Controles: <strong>Space / Tap</strong> para flap, <strong>Shift / Botón</strong> para
-              power, <strong>R</strong> para reinicio y <strong>F</strong> para fullscreen.
+              power, <strong>P</strong> para pausar, <strong>R</strong> para reinicio y <strong>F</strong>
+              para fullscreen.
             </p>
           </div>
           <div class="game-shell">
             <canvas id="game-canvas" aria-label="Sky Circuits game canvas"></canvas>
             <button id="power-btn" type="button" aria-label="Activar power-up">Power</button>
           </div>
+          <div class="status-grid" aria-live="polite">
+            <p><span>Modo</span><strong id="mode-value">Menú</strong></p>
+            <p><span>Score</span><strong id="score-value">0</strong></p>
+            <p><span>Fase</span><strong id="phase-value">1</strong></p>
+            <p><span>Cargas</span><strong id="charges-value">0/2</strong></p>
+            <p><span>Power activo</span><strong id="power-value">-</strong></p>
+          </div>
+          <div class="heat-meter" role="meter" aria-label="Nivel de calor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="heat-meter-bar" id="heat-fill"></div>
+          </div>
+          <p class="assist-hint" id="assist-hint">Pulsa Space o toca el canvas para empezar.</p>
         </section>
       </main>
 

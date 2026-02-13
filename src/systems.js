@@ -206,16 +206,51 @@ function spawnObstacle(state, difficulty) {
   }
 
   const collectibleRadius = GAME_CONFIG.spawn.collectibleRadius;
-  const edgeOffset = Math.max(halfGap - collectibleRadius - 8, 10);
-  const direction = Math.random() < 0.5 ? -1 : 1;
+  const minCollectibleY = collectibleRadius + GAME_CONFIG.spawn.edgeMargin;
+  const maxCollectibleY = state.world.height - collectibleRadius - GAME_CONFIG.spawn.edgeMargin;
+  const gapTop = clamp(gapY - halfGap, minCollectibleY, maxCollectibleY);
+  const gapBottom = clamp(gapY + halfGap, minCollectibleY, maxCollectibleY);
+
+  const placements = [
+    {
+      // Cerca del borde superior del gap para recompensar vuelo agresivo.
+      weight: 0.34,
+      y: gapTop + collectibleRadius + Math.random() * Math.max(14, halfGap * 0.24),
+    },
+    {
+      // En el centro del gap para una ruta mas segura.
+      weight: 0.26,
+      y: gapY + (Math.random() - 0.5) * Math.max(18, halfGap * 0.18),
+    },
+    {
+      // Cerca del borde inferior del gap para alternar alturas.
+      weight: 0.4,
+      y: gapBottom - collectibleRadius - Math.random() * Math.max(14, halfGap * 0.24),
+    },
+  ];
+
+  const totalPlacementWeight = placements.reduce((sum, item) => sum + item.weight, 0);
+  let placementCursor = Math.random() * totalPlacementWeight;
+  let selectedY = placements[placements.length - 1].y;
+
+  for (const placement of placements) {
+    placementCursor -= placement.weight;
+    if (placementCursor <= 0) {
+      selectedY = placement.y;
+      break;
+    }
+  }
+
   const collectibleY = clamp(
-    gapY + direction * edgeOffset,
+    selectedY,
     collectibleRadius + GAME_CONFIG.spawn.edgeMargin,
     state.world.height - collectibleRadius - GAME_CONFIG.spawn.edgeMargin
   );
 
+  const collectibleXOffset = width * (0.35 + Math.random() * 0.3);
+
   state.collectibles.push({
-    x: x + width * 0.5,
+    x: x + collectibleXOffset,
     y: collectibleY,
     radius: collectibleRadius,
     bonus: GAME_CONFIG.spawn.collectibleBonus,

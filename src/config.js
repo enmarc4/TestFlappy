@@ -15,6 +15,9 @@ export const GAME_CONFIG = {
   },
   player: {
     radius: 16,
+    hitboxRadiusXFactor: 0.72,
+    hitboxRadiusYFactor: 0.8,
+    hitboxOffsetX: -1,
     baseXFactor: 0.28,
     maxXFactor: 0.75,
     horizontalSpring: 3.2,

@@ -201,8 +201,18 @@ function drawModeOverlay(ctx, state) {
       "Space o tap: flap",
       "Shift o boton Power: activar power-up",
       "Recoge aros para cargar habilidades (max 2)",
-      "F: fullscreen | R: reiniciar",
+      "F: fullscreen | P: pausar | R: reiniciar",
       "Click o Space para empezar",
+    ]);
+    return;
+  }
+
+
+  if (state.mode === "paused") {
+    drawCenterCard(ctx, state, "Pausa táctica", "Respira, observa y reengancha", [
+      "Pulsa P para continuar",
+      "Space o tap también reanudan la run",
+      "Usa esta pausa para planear el próximo power-up",
     ]);
     return;
   }

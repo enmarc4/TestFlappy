@@ -10,14 +10,32 @@ import {
   startGame,
   triggerFlap,
   tryActivatePowerUp,
+  togglePause,
   updateGame,
 } from "./systems.js";
 import { attachTestingHooks } from "./testing-hooks.js";
 
 const canvas = document.getElementById("game-canvas");
 const powerButton = document.getElementById("power-btn");
+const modeValue = document.getElementById("mode-value");
+const scoreValue = document.getElementById("score-value");
+const phaseValue = document.getElementById("phase-value");
+const chargesValue = document.getElementById("charges-value");
+const powerValue = document.getElementById("power-value");
+const heatFill = document.getElementById("heat-fill");
+const assistHint = document.getElementById("assist-hint");
 
-if (!(canvas instanceof HTMLCanvasElement) || !(powerButton instanceof HTMLButtonElement)) {
+if (
+  !(canvas instanceof HTMLCanvasElement) ||
+  !(powerButton instanceof HTMLButtonElement) ||
+  !(modeValue instanceof HTMLElement) ||
+  !(scoreValue instanceof HTMLElement) ||
+  !(phaseValue instanceof HTMLElement) ||
+  !(chargesValue instanceof HTMLElement) ||
+  !(powerValue instanceof HTMLElement) ||
+  !(heatFill instanceof HTMLElement) ||
+  !(assistHint instanceof HTMLElement)
+) {
   throw new Error("Game DOM not found");
 }
 
@@ -66,6 +84,10 @@ function handleFlapAction() {
     return;
   }
 
+  if (state.mode === "paused") {
+    togglePause(state);
+  }
+
   if (state.mode === "menu") {
     startGame(state);
   }
@@ -75,6 +97,41 @@ function handleFlapAction() {
 
 function handlePowerAction() {
   tryActivatePowerUp(state);
+}
+
+function handlePauseAction() {
+  togglePause(state);
+}
+
+function getModeLabel() {
+  if (state.mode === "playing") return "En juego";
+  if (state.mode === "paused") return "Pausado";
+  if (state.mode === "gameover") return "Game Over";
+  return "Menú";
+}
+
+function getHint() {
+  if (state.mode === "menu") return "Pulsa Space o toca el canvas para empezar.";
+  if (state.mode === "paused") return "Juego pausado. Pulsa P, Space o toca para continuar.";
+  if (state.mode === "gameover") return "Run terminada. Space/tap para reintentar al instante.";
+  if (state.overheatTimer > 0) return `Overheat activo: ${state.overheatTimer.toFixed(1)}s. Juega defensivo.`;
+  return "Tip: guarda una carga para fases de alta presión.";
+}
+
+function syncUi() {
+  modeValue.textContent = getModeLabel();
+  scoreValue.textContent = String(state.score);
+  phaseValue.textContent = String(state.difficultyPhase);
+  chargesValue.textContent = `${state.charges}/2`;
+  powerValue.textContent = state.ui.activePowerLabel;
+  const heatPercent = Math.max(0, Math.min(100, state.heat));
+  heatFill.style.width = `${heatPercent}%`;
+  heatFill.parentElement?.setAttribute("aria-valuenow", String(Math.round(heatPercent)));
+
+  const canUsePower = state.mode === "playing" && state.charges > 0 && state.overheatTimer <= 0 && !state.activePowerUp;
+  powerButton.disabled = !canUsePower;
+  powerButton.textContent = canUsePower ? "Power" : state.mode === "paused" ? "Pausa" : "Lock";
+  assistHint.textContent = getHint();
 }
 
 async function toggleFullscreen() {
@@ -93,6 +150,7 @@ setupInput({
   onFlap: handleFlapAction,
   onPower: handlePowerAction,
   onRestart: handleRestartAction,
+  onTogglePause: handlePauseAction,
   onToggleFullscreen: toggleFullscreen,
 });
 
@@ -108,6 +166,7 @@ function advanceByMs(ms) {
     updateGame(state, FIXED_DT);
   }
   renderGame(ctx, state);
+  syncUi();
 }
 
 function frame(timestamp) {
@@ -125,6 +184,7 @@ function frame(timestamp) {
   }
 
   renderGame(ctx, state);
+  syncUi();
   window.requestAnimationFrame(frame);
 }
 
@@ -136,4 +196,5 @@ attachTestingHooks({
 
 resizeCanvas();
 resetRound(state, "menu");
+syncUi();
 window.requestAnimationFrame(frame);

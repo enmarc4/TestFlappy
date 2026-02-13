@@ -4,6 +4,23 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function getPlayerHitbox(player) {
+  return {
+    cx: player.x + GAME_CONFIG.player.hitboxOffsetX,
+    cy: player.y,
+    rx: player.radius * GAME_CONFIG.player.hitboxRadiusXFactor,
+    ry: player.radius * GAME_CONFIG.player.hitboxRadiusYFactor,
+  };
+}
+
+function collidesEllipseRect(hitbox, rect) {
+  const closestX = clamp(hitbox.cx, rect.x, rect.x + rect.width);
+  const closestY = clamp(hitbox.cy, rect.y, rect.y + rect.height);
+  const dx = (hitbox.cx - closestX) / hitbox.rx;
+  const dy = (hitbox.cy - closestY) / hitbox.ry;
+  return dx * dx + dy * dy <= 1;
+}
+
 function pickWeightedPowerUp() {
   const pool = GAME_CONFIG.powerUps.pool;
   const totalWeight = pool.reduce((sum, item) => sum + item.weight, 0);
@@ -320,8 +337,10 @@ function updateObstacles(state, dt, difficulty) {
 }
 
 function scorePassedObstacles(state) {
+  const hitbox = getPlayerHitbox(state.player);
+
   for (const obstacle of state.obstacles) {
-    if (!obstacle.scored && obstacle.x + obstacle.width < state.player.x - state.player.radius) {
+    if (!obstacle.scored && obstacle.x + obstacle.width < hitbox.cx - hitbox.rx) {
       obstacle.scored = true;
       state.score += 1;
     }
@@ -330,12 +349,14 @@ function scorePassedObstacles(state) {
 
 function collectCharges(state) {
   const player = state.player;
+  const hitbox = getPlayerHitbox(player);
+  const collectRadius = Math.max(hitbox.rx, hitbox.ry);
 
   state.collectibles = state.collectibles.filter((collectible) => {
-    const dx = collectible.x - player.x;
-    const dy = collectible.y - player.y;
+    const dx = collectible.x - hitbox.cx;
+    const dy = collectible.y - hitbox.cy;
     const distanceSquared = dx * dx + dy * dy;
-    const minDistance = collectible.radius + player.radius;
+    const minDistance = collectible.radius + collectRadius;
 
     if (distanceSquared <= minDistance * minDistance) {
       state.charges = Math.min(GAME_CONFIG.powerUps.maxCharges, state.charges + 1);
@@ -349,8 +370,9 @@ function collectCharges(state) {
 
 function checkBoundsCollision(state) {
   const player = state.player;
+  const hitbox = getPlayerHitbox(player);
 
-  if (player.y - player.radius >= 0 && player.y + player.radius <= state.world.height) {
+  if (hitbox.cy - hitbox.ry >= 0 && hitbox.cy + hitbox.ry <= state.world.height) {
     return;
   }
 
@@ -373,9 +395,10 @@ function checkObstacleCollision(state) {
   }
 
   const player = state.player;
+  const hitbox = getPlayerHitbox(player);
 
   for (const obstacle of state.obstacles) {
-    const overlapX = player.x + player.radius > obstacle.x && player.x - player.radius < obstacle.x + obstacle.width;
+    const overlapX = hitbox.cx + hitbox.rx > obstacle.x && hitbox.cx - hitbox.rx < obstacle.x + obstacle.width;
 
     if (!overlapX) {
       continue;
@@ -384,7 +407,19 @@ function checkObstacleCollision(state) {
     const gapTop = obstacle.gapY - obstacle.gapHeight * 0.5;
     const gapBottom = obstacle.gapY + obstacle.gapHeight * 0.5;
 
-    const collides = player.y - player.radius < gapTop || player.y + player.radius > gapBottom;
+    const collidesTop = collidesEllipseRect(hitbox, {
+      x: obstacle.x,
+      y: 0,
+      width: obstacle.width,
+      height: gapTop,
+    });
+    const collidesBottom = collidesEllipseRect(hitbox, {
+      x: obstacle.x,
+      y: gapBottom,
+      width: obstacle.width,
+      height: state.world.height - gapBottom,
+    });
+    const collides = collidesTop || collidesBottom;
     if (!collides) {
       continue;
     }

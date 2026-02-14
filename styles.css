@@ -543,6 +543,15 @@ body {
     width: 100%;
   }
 
+  .game-shell {
+    width: min(100%, 420px);
+  }
+
+  #game-canvas {
+    aspect-ratio: 9 / 16;
+    max-height: 72vh;
+  }
+
   #power-btn {
     right: 0.75rem;
     bottom: 0.75rem;

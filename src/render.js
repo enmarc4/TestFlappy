@@ -6,25 +6,28 @@ function drawBackground(ctx, state) {
   const { width, height } = state.world;
 
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, "#90faff");
-  gradient.addColorStop(0.5, "#3ab9ff");
-  gradient.addColorStop(1, "#0a4f8f");
+  gradient.addColorStop(0, "#8fd5ff");
+  gradient.addColorStop(0.55, "#4ca9f4");
+  gradient.addColorStop(1, "#1e69bb");
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  ctx.save();
-  ctx.globalAlpha = 0.24;
-  for (let i = 0; i < 24; i += 1) {
-    const y = ((i * 46 + state.totalTime * 32) % (height + 50)) - 26;
-    ctx.strokeStyle = i % 2 === 0 ? "#c7ffff" : "#93dcff";
-    ctx.lineWidth = 2;
+  for (let i = 0; i < 8; i += 1) {
+    const cloudX = ((i * 190 - state.totalTime * (22 + i * 1.2)) % (width + 220)) - 110;
+    const cloudY = 60 + (i % 4) * 90 + Math.sin(state.totalTime * 0.6 + i) * 6;
+    const cloudW = 120 + (i % 3) * 28;
+
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = "#f7fcff";
     ctx.beginPath();
-    ctx.moveTo(-10, y);
-    ctx.lineTo(width + 10, y + (i % 4 === 0 ? 14 : -14));
-    ctx.stroke();
+    ctx.ellipse(cloudX, cloudY, cloudW * 0.26, 20, 0, 0, Math.PI * 2);
+    ctx.ellipse(cloudX + cloudW * 0.18, cloudY - 10, cloudW * 0.18, 24, 0, 0, Math.PI * 2);
+    ctx.ellipse(cloudX + cloudW * 0.34, cloudY, cloudW * 0.22, 21, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
-  ctx.restore();
 }
 
 function drawObstacle(ctx, obstacle, state) {
@@ -32,20 +35,59 @@ function drawObstacle(ctx, obstacle, state) {
   const bottomY = obstacle.gapY + obstacle.gapHeight * 0.5;
   const bottomHeight = state.world.height - bottomY;
 
-  ctx.fillStyle = "#102f69";
-  ctx.fillRect(obstacle.x, 0, obstacle.width, topHeight);
-  ctx.fillRect(obstacle.x, bottomY, obstacle.width, bottomHeight);
+  const bodyGradient = ctx.createLinearGradient(obstacle.x, 0, obstacle.x + obstacle.width, 0);
+  bodyGradient.addColorStop(0, "#596575");
+  bodyGradient.addColorStop(0.5, "#a8b3c0");
+  bodyGradient.addColorStop(1, "#4d5764");
 
-  ctx.fillStyle = "#30f2ff";
-  ctx.fillRect(obstacle.x - 2, topHeight - 10, obstacle.width + 4, 10);
-  ctx.fillRect(obstacle.x - 2, bottomY, obstacle.width + 4, 10);
+  const finGradient = ctx.createLinearGradient(obstacle.x, 0, obstacle.x + obstacle.width, 0);
+  finGradient.addColorStop(0, "#de3223");
+  finGradient.addColorStop(1, "#ff604b");
 
-  ctx.save();
-  ctx.globalAlpha = 0.32;
-  ctx.fillStyle = "#93f9ff";
-  ctx.fillRect(obstacle.x + obstacle.width * 0.22, 0, obstacle.width * 0.17, topHeight);
-  ctx.fillRect(obstacle.x + obstacle.width * 0.22, bottomY, obstacle.width * 0.17, bottomHeight);
-  ctx.restore();
+  const capGradient = ctx.createLinearGradient(0, 0, 0, topHeight);
+  capGradient.addColorStop(0, "#ff5a48");
+  capGradient.addColorStop(1, "#ce2216");
+
+  const drawRocketPipe = (x, y, pipeHeight, upsideDown) => {
+    if (pipeHeight <= 0) return;
+
+    const tipSize = Math.min(32, pipeHeight * 0.35);
+    const bodyY = upsideDown ? y + tipSize : y;
+    const bodyHeight = pipeHeight - tipSize;
+    const tipY = upsideDown ? y : y + bodyHeight;
+
+    if (bodyHeight > 0) {
+      ctx.fillStyle = bodyGradient;
+      ctx.fillRect(x, bodyY, obstacle.width, bodyHeight);
+
+      ctx.fillStyle = "rgba(255,255,255,0.33)";
+      ctx.fillRect(x + obstacle.width * 0.2, bodyY, obstacle.width * 0.14, bodyHeight);
+
+      ctx.fillStyle = finGradient;
+      ctx.fillRect(x - 7, bodyY + 16, 8, Math.max(14, bodyHeight * 0.22));
+      ctx.fillRect(x + obstacle.width - 1, bodyY + 16, 8, Math.max(14, bodyHeight * 0.22));
+    }
+
+    ctx.fillStyle = capGradient;
+    ctx.beginPath();
+    if (upsideDown) {
+      ctx.moveTo(x, tipY + tipSize);
+      ctx.lineTo(x + obstacle.width * 0.5, tipY);
+      ctx.lineTo(x + obstacle.width, tipY + tipSize);
+    } else {
+      ctx.moveTo(x, tipY);
+      ctx.lineTo(x + obstacle.width * 0.5, tipY + tipSize);
+      ctx.lineTo(x + obstacle.width, tipY);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#252b35";
+    ctx.fillRect(x - 2, upsideDown ? y + pipeHeight - 6 : y - 4, obstacle.width + 4, 8);
+  };
+
+  drawRocketPipe(obstacle.x, 0, topHeight, false);
+  drawRocketPipe(obstacle.x, bottomY, bottomHeight, true);
 }
 
 function drawCollectible(ctx, collectible, pulse) {
@@ -67,37 +109,84 @@ function drawCollectible(ctx, collectible, pulse) {
 
 function drawPlayer(ctx, state) {
   const { player } = state;
-  const wobble = Math.sin(state.totalTime * 10) * 0.12;
+  const wobble = Math.sin(state.totalTime * 10) * 0.08;
 
   ctx.save();
   ctx.translate(player.x, player.y);
-  ctx.rotate(Math.max(-0.38, Math.min(0.38, player.vy / 800)) + wobble);
+  ctx.rotate(Math.max(-0.32, Math.min(0.45, player.vy / 780)) + wobble);
 
   if (state.invulnerabilityTimer > 0) {
-    ctx.shadowColor = "#83ffef";
+    ctx.shadowColor = "#ffd95d";
     ctx.shadowBlur = 15;
   }
 
-  ctx.fillStyle = "#fff7d7";
+  const rocketBody = ctx.createLinearGradient(-16, -10, 16, 20);
+  rocketBody.addColorStop(0, "#c6d2dc");
+  rocketBody.addColorStop(0.45, "#f4f7fb");
+  rocketBody.addColorStop(1, "#8793a0");
+
+  ctx.fillStyle = rocketBody;
   ctx.beginPath();
-  ctx.ellipse(0, 0, player.radius + 3, player.radius - 2, 0, 0, Math.PI * 2);
+  ctx.roundRect(-12, -18, 24, 34, 12);
   ctx.fill();
 
-  ctx.fillStyle = "#0f5089";
+  ctx.fillStyle = "#eb3b2e";
   ctx.beginPath();
-  ctx.arc(6, -5, 3.2, 0, Math.PI * 2);
+  ctx.moveTo(-11, -18);
+  ctx.lineTo(0, -30);
+  ctx.lineTo(11, -18);
+  ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = "#ff955f";
+  ctx.fillStyle = "#273443";
   ctx.beginPath();
-  ctx.moveTo(10, 0);
-  ctx.lineTo(20, -2);
-  ctx.lineTo(10, 4);
+  ctx.roundRect(-9, -7, 18, 13, 6);
+  ctx.fill();
+
+  ctx.fillStyle = "#ffe157";
+  ctx.beginPath();
+  ctx.arc(-3, -1, 4.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#111820";
+  ctx.beginPath();
+  ctx.arc(-2, -1, 1.7, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#ff9f2b";
+  ctx.beginPath();
+  ctx.moveTo(2, 1);
+  ctx.lineTo(9, 0);
+  ctx.lineTo(2, 4);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "#e43526";
+  ctx.beginPath();
+  ctx.moveTo(-12, -2);
+  ctx.lineTo(-20, 4);
+  ctx.lineTo(-12, 8);
+  ctx.closePath();
+  ctx.moveTo(12, -2);
+  ctx.lineTo(20, 4);
+  ctx.lineTo(12, 8);
+  ctx.closePath();
+  ctx.fill();
+
+  const flame = 10 + Math.max(0, player.vy * 0.01);
+  const flameGradient = ctx.createLinearGradient(0, 12, 0, 24 + flame);
+  flameGradient.addColorStop(0, "#fff18b");
+  flameGradient.addColorStop(0.45, "#ff9d2f");
+  flameGradient.addColorStop(1, "#ff4b16");
+  ctx.fillStyle = flameGradient;
+  ctx.beginPath();
+  ctx.moveTo(-5, 16);
+  ctx.quadraticCurveTo(0, 26 + flame, 5, 16);
   ctx.closePath();
   ctx.fill();
 
   if (state.activePowerUp?.type === "shield" && state.shieldHitsRemaining > 0) {
-    ctx.strokeStyle = "#89fff2";
+    ctx.strokeStyle = "#fff6c0";
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(0, 0, player.radius + 8 + Math.sin(state.totalTime * 16) * 1.5, 0, Math.PI * 2);

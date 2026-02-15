@@ -52,6 +52,73 @@ function getObstacleWidth(worldWidth) {
   return clamp(worldWidth * 0.09, GAME_CONFIG.spawn.obstacleWidthMin, GAME_CONFIG.spawn.obstacleWidthMax);
 }
 
+function emitRuntimeEvent(state, type, data = {}) {
+  state.events.push({
+    type,
+    at: Number(state.totalTime.toFixed(3)),
+    ...data,
+  });
+}
+
+function getEnvironmentTier(score) {
+  const step = GAME_CONFIG.progression.scorePerEnvironment;
+  return Math.floor(score / step);
+}
+
+function syncEnvironmentFromScore(state, { force = false } = {}) {
+  const step = GAME_CONFIG.progression.scorePerEnvironment;
+  const tier = getEnvironmentTier(state.score);
+  const environmentCount = GAME_CONFIG.environments.length;
+  const nextIndex = environmentCount > 0 ? tier % environmentCount : 0;
+  const progressToNext = (state.score % step) / step;
+  const nextMilestone = (tier + 1) * step;
+
+  state.environment.currentTier = tier;
+  state.environment.progressToNext = progressToNext;
+  state.environment.nextMilestone = nextMilestone;
+
+  if (force) {
+    state.environment.previousIndex = nextIndex;
+    state.environment.activeIndex = nextIndex;
+    state.environment.transitionTimer = 0;
+    state.environment.transitionProgress = 1;
+    state.environment.labelTimer = 0;
+    return;
+  }
+
+  if (nextIndex === state.environment.activeIndex) {
+    return;
+  }
+
+  const fromIndex = state.environment.activeIndex;
+  state.environment.previousIndex = fromIndex;
+  state.environment.activeIndex = nextIndex;
+  state.environment.transitionTimer = GAME_CONFIG.progression.transitionDuration;
+  state.environment.transitionProgress = 0;
+  state.environment.labelTimer = GAME_CONFIG.progression.labelDuration;
+
+  emitRuntimeEvent(state, "environment-shift", {
+    fromIndex,
+    toIndex: nextIndex,
+    tier,
+    score: state.score,
+  });
+}
+
+function addScore(state, amount, source) {
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return;
+  }
+
+  state.score += amount;
+  emitRuntimeEvent(state, "score-gain", {
+    amount,
+    source,
+    score: state.score,
+  });
+  syncEnvironmentFromScore(state);
+}
+
 function writeHighScore(score) {
   try {
     window.localStorage.setItem(STORAGE_KEYS.highScore, String(score));
@@ -75,6 +142,7 @@ export function resizeWorld(state, width, height, dpr) {
 }
 
 export function resetRound(state, mode = "menu") {
+  state.events = [];
   state.mode = mode;
   state.runTime = 0;
   state.difficultyPhase = 1;
@@ -95,7 +163,17 @@ export function resetRound(state, mode = "menu") {
   state.shieldHitsRemaining = 0;
   state.gapWidenTimer = 0;
   state.fluxBoostTimer = 0;
+  state.environment.activeIndex = 0;
+  state.environment.previousIndex = 0;
+  state.environment.currentTier = 0;
+  state.environment.nextMilestone = GAME_CONFIG.progression.scorePerEnvironment;
+  state.environment.progressToNext = 0;
+  state.environment.transitionTimer = 0;
+  state.environment.transitionProgress = 1;
+  state.environment.labelTimer = 0;
   state.ui.activePowerLabel = "-";
+
+  syncEnvironmentFromScore(state, { force: true });
 }
 
 export function startGame(state) {
@@ -109,6 +187,7 @@ export function startGame(state) {
   }
 
   resetRound(state, "playing");
+  emitRuntimeEvent(state, "run-start");
 }
 
 export function triggerFlap(state) {
@@ -121,6 +200,7 @@ export function triggerFlap(state) {
   }
 
   state.player.vy = GAME_CONFIG.physics.flapImpulse;
+  emitRuntimeEvent(state, "flap");
 }
 
 function setPowerLabel(state, type) {
@@ -136,6 +216,7 @@ function setPowerLabel(state, type) {
 function consumeShield(state) {
   state.shieldHitsRemaining = 0;
   state.invulnerabilityTimer = GAME_CONFIG.player.invulnerabilityAfterShield;
+  emitRuntimeEvent(state, "shield-hit");
 
   if (state.activePowerUp?.type === "shield") {
     state.activePowerUp = null;
@@ -233,6 +314,7 @@ function spawnObstacle(state, difficulty) {
     width,
     gapY,
     gapHeight,
+    themeIndex: state.environment.activeIndex,
     scored: false,
   };
 
@@ -295,9 +377,17 @@ function spawnObstacle(state, difficulty) {
 }
 
 function triggerGameOver(state) {
+  if (state.mode === "gameover") {
+    return;
+  }
+
   state.mode = "gameover";
   state.activePowerUp = null;
   setPowerLabel(state, null);
+  emitRuntimeEvent(state, "gameover", {
+    score: state.score,
+    runDuration: Number(state.runTime.toFixed(3)),
+  });
 
   if (state.score > state.highScore) {
     state.highScore = state.score;
@@ -344,6 +434,22 @@ function updateTimers(state, dt) {
       state.activePowerUp = null;
       setPowerLabel(state, null);
     }
+  }
+
+  if (state.environment.transitionTimer > 0) {
+    state.environment.transitionTimer = Math.max(0, state.environment.transitionTimer - dt);
+    const duration = GAME_CONFIG.progression.transitionDuration || 0.0001;
+    state.environment.transitionProgress = 1 - state.environment.transitionTimer / duration;
+    if (state.environment.transitionTimer <= 0) {
+      state.environment.transitionProgress = 1;
+      state.environment.previousIndex = state.environment.activeIndex;
+    }
+  } else {
+    state.environment.transitionProgress = 1;
+  }
+
+  if (state.environment.labelTimer > 0) {
+    state.environment.labelTimer = Math.max(0, state.environment.labelTimer - dt);
   }
 }
 
@@ -397,7 +503,7 @@ function scorePassedObstacles(state) {
   for (const obstacle of state.obstacles) {
     if (!obstacle.scored && obstacle.x + obstacle.width < hitbox.cx - hitbox.rx) {
       obstacle.scored = true;
-      state.score += 1;
+      addScore(state, 1, "obstacle");
     }
   }
 }
@@ -415,7 +521,11 @@ function collectCharges(state) {
 
     if (distanceSquared <= minDistance * minDistance) {
       state.charges = Math.min(GAME_CONFIG.powerUps.maxCharges, state.charges + 1);
-      state.score += collectible.bonus;
+      addScore(state, collectible.bonus, "collectible");
+      emitRuntimeEvent(state, "collectible-pickup", {
+        charges: state.charges,
+        bonus: collectible.bonus,
+      });
       return false;
     }
 
@@ -512,10 +622,32 @@ export function updateGame(state, dt) {
 }
 
 export function restartFromGameOver(state) {
+  if (state.mode === "playing" && state.runTime > 0.2) {
+    emitRuntimeEvent(state, "run-aborted", {
+      score: state.score,
+      runDuration: Number(state.runTime.toFixed(3)),
+    });
+  }
+
   resetRound(state, "playing");
+  emitRuntimeEvent(state, "run-start");
+}
+
+export function consumeRuntimeEvents(state) {
+  const events = state.events;
+  state.events = [];
+  return events;
+}
+
+export function setScoreForTesting(state, score) {
+  const parsed = Math.max(0, Math.floor(Number(score) || 0));
+  state.score = parsed;
+  syncEnvironmentFromScore(state);
 }
 
 export function getTextSnapshot(state) {
+  const activeEnvironment =
+    GAME_CONFIG.environments[state.environment.activeIndex] ?? GAME_CONFIG.environments[0] ?? null;
   const controlsHint =
     state.mode === "playing"
       ? "Desktop: Space=flap, Shift=power, P=pausa, F=fullscreen. Movil: tap=flap, boton Power=power."
@@ -537,6 +669,7 @@ export function getTextSnapshot(state) {
       w: Number(obstacle.width.toFixed(1)),
       gapY: Number(obstacle.gapY.toFixed(1)),
       gapH: Number(obstacle.gapHeight.toFixed(1)),
+      themeIndex: obstacle.themeIndex ?? state.environment.activeIndex,
     })),
     collectibles: state.collectibles.map((collectible) => ({
       x: Number(collectible.x.toFixed(1)),
@@ -556,6 +689,14 @@ export function getTextSnapshot(state) {
     score: state.score,
     highScore: state.highScore,
     phase: state.difficultyPhase,
+    environment: {
+      index: state.environment.activeIndex + 1,
+      name: activeEnvironment?.label ?? "N/A",
+      tier: state.environment.currentTier,
+      progressToNext: Number(state.environment.progressToNext.toFixed(2)),
+      nextMilestone: state.environment.nextMilestone,
+      pointsToNext: Math.max(0, state.environment.nextMilestone - state.score),
+    },
     controlsHint,
   };
 }

@@ -30,8 +30,8 @@
             gestión de calor para decidir cuándo atacar con power-ups y cuándo conservar energía.
           </p>
           <div class="hero-actions">
-            <a href="#play-zone" class="btn btn-primary">Entrar a la partida</a>
-            <a href="#feature-grid" class="btn btn-ghost">Ver mecánicas</a>
+            <a href="#play-zone" class="btn btn-primary" id="cta-play">Entrar a la partida</a>
+            <a href="#feature-grid" class="btn btn-ghost" id="cta-mechanics">Ver mecánicas</a>
           </div>
           <ul class="hero-highlights">
             <li>
@@ -121,6 +121,10 @@
               para fullscreen.
             </p>
           </div>
+          <div class="phase-progress" role="progressbar" aria-label="Progreso de ambiente" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="phase-progress-fill" id="phase-progress-fill"></div>
+          </div>
+          <p class="phase-progress-label" id="phase-progress-label">Ambient 1 · 50 pts per canvi</p>
           <div class="game-shell">
             <canvas id="game-canvas" aria-label="Sky Circuits game canvas"></canvas>
             <button id="power-btn" type="button" aria-label="Activar power-up">Power</button>
@@ -129,8 +133,13 @@
             <p><span>Modo</span><strong id="mode-value">Menú</strong></p>
             <p><span>Score</span><strong id="score-value">0</strong></p>
             <p><span>Fase</span><strong id="phase-value">1</strong></p>
+            <p><span>Ambiente</span><strong id="environment-value">Stratos Labs</strong></p>
+            <p><span>Progreso</span><strong id="progress-value">0/50</strong></p>
             <p><span>Cargas</span><strong id="charges-value">0/2</strong></p>
             <p><span>Power activo</span><strong id="power-value">-</strong></p>
+            <p><span>Runs</span><strong id="runs-value">0</strong></p>
+            <p><span>Duración media</span><strong id="avg-duration-value">0.0s</strong></p>
+            <p><span>Clicks CTA</span><strong id="cta-value">0</strong></p>
           </div>
           <div class="heat-meter" role="meter" aria-label="Nivel de calor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div class="heat-meter-bar" id="heat-fill"></div>

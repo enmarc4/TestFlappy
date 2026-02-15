@@ -92,6 +92,59 @@ Original prompt: Quiero hacer un juego estilo Flappy Bird, pero vamos a darle al
   - No hay bloqueo del loop si fallara la carga de imagen (fallback activo).
 
 ### TODO sugerido (V1.3)
-- Añadir una pequena animacion de alas/propulsor (2-3 frames) para dar mas vida al personaje.
-- Generar variante visual de canonada por fase de dificultad (fase 1/2/3) para reforzar feedback de progreso.
-- Añadir un collectible sprite tematico (aro tecnologico) para homogeneidad estetica con personaje y canonadas.
+- Implementar sistema de fases de ambiente por score (cambio cada 50 puntos).
+- Anadir una linea/barra de progreso superior para mostrar avance al siguiente cambio de fase.
+- Definir 3 ambientes base para la partida con estilo diferenciable y coherente entre si.
+- Generar sprites de canonada por ambiente (pipe-body + pipe-cap para cada una de las 3 fases).
+- Validar transiciones de fase para que mantengan legibilidad de obstaculos y claridad de gameplay.
+
+## 2026-02-15 - Progreso visual por fases + telemetria + audio (V1.3)
+
+### Hecho
+- Se implemento progresion visual por score con cambio de ambiente cada 50 puntos.
+- Se definieron 3 ambientes con identidad completa (fondo, HUD, acentos y tuberias):
+  - `Stratos Labs` (azul/cyan).
+  - `Ember Foundry` (ambar/cobre).
+  - `Ion Storm` (grafito/cyan electrico).
+- Se prepararon y conectaron assets por fase:
+  - Fondos: `assets/backgrounds/bg-phase-1.png`, `bg-phase-2.png`, `bg-phase-3.png`.
+  - Tuberias: `assets/sprites/phases/pipe-body-phase-{1,2,3}.png` y `pipe-cap-phase-{1,2,3}.png`.
+- Se actualizo renderizado para:
+  - Pintar background por ambiente con crossfade en transicion.
+  - Spawnear obstaculos con `themeIndex` para mantener consistencia visual por obstaculo.
+  - Dibujar barra superior de progreso dentro del canvas (avance al siguiente hito).
+  - Adaptar HUD en modo compacto para mobile y mantener legibilidad.
+- Se anadio barra de progreso tambien en la UI externa (`play-zone`) con label en vivo.
+- Se implemento SFX WebAudio:
+  - `flap`, `collectible-pickup`, `shield-hit`, `gameover`.
+- Se incorporo telemetria basica persistente en `localStorage` (`skyCircuits.telemetry.v1`):
+  - clicks en CTA,
+  - inicios de run,
+  - duracion media de run.
+- Se afino balance de power-ups y heat en `src/config.js`:
+  - menor calor por uso,
+  - mayor disipacion,
+  - menor castigo de overheat,
+  - ajuste de duraciones/pesos.
+- Se extendieron hooks de testing con `window.setDebugScore(score)` para validar fases visuales rapidamente.
+
+### Validacion
+- Smoke test runtime con cliente Playwright (skill `develop-web-game`):
+  - `output/web-game/prio12-smoke/`
+  - `output/web-game/prio12-smoke-v2/`
+  - `output/web-game/prio12-smoke-v3/`
+- Validacion visual de fases forzando score via hook:
+  - Canvas fase 1: `output/web-game/prio12-phase1.png`
+  - Canvas fase 2: `output/web-game/prio12-phase2.png`
+  - Canvas fase 3: `output/web-game/prio12-phase3.png`
+  - Estados: `output/web-game/prio12-phase{1,2,3}.json`
+- Validacion responsive desktop/mobile:
+  - `output/web-game/prio12-desktop-full-v2.png`
+  - `output/web-game/prio12-mobile-full-v2.png`
+  - Comprobacion mobile de ambiente 2 en canvas: `output/web-game/prio12-mobile-phase2-canvas-v3.png`
+- Validacion funcional de telemetria CTA/runs en UI mediante Playwright evaluate.
+
+### TODO sugerido (V1.4)
+- Anadir un modo diario (`daily seed`) con ranking local para reforzar rejugabilidad.
+- Evaluar una animacion ligera del sprite del player (2-3 frames) para feedback de propulsion.
+- Registrar telemetria adicional de cambio de ambiente (tiempo hasta hito, score por fase).

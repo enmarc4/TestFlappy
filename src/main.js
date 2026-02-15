@@ -1,12 +1,16 @@
-import { FIXED_DT } from "./config.js";
+import { FIXED_DT, GAME_CONFIG } from "./config.js";
+import { createGameAudio } from "./audio.js";
 import { setupInput } from "./input.js";
 import { renderGame } from "./render.js";
 import { createInitialState } from "./state.js";
+import { createTelemetryStore } from "./telemetry.js";
 import {
+  consumeRuntimeEvents,
   getTextSnapshot,
   resetRound,
   resizeWorld,
   restartFromGameOver,
+  setScoreForTesting,
   startGame,
   triggerFlap,
   tryActivatePowerUp,
@@ -20,10 +24,18 @@ const powerButton = document.getElementById("power-btn");
 const modeValue = document.getElementById("mode-value");
 const scoreValue = document.getElementById("score-value");
 const phaseValue = document.getElementById("phase-value");
+const environmentValue = document.getElementById("environment-value");
+const progressValue = document.getElementById("progress-value");
 const chargesValue = document.getElementById("charges-value");
 const powerValue = document.getElementById("power-value");
 const heatFill = document.getElementById("heat-fill");
 const assistHint = document.getElementById("assist-hint");
+const phaseProgressFill = document.getElementById("phase-progress-fill");
+const phaseProgressLabel = document.getElementById("phase-progress-label");
+const runsValue = document.getElementById("runs-value");
+const avgDurationValue = document.getElementById("avg-duration-value");
+const ctaValue = document.getElementById("cta-value");
+const ctaButtons = Array.from(document.querySelectorAll(".hero-actions .btn"));
 
 if (
   !(canvas instanceof HTMLCanvasElement) ||
@@ -31,10 +43,17 @@ if (
   !(modeValue instanceof HTMLElement) ||
   !(scoreValue instanceof HTMLElement) ||
   !(phaseValue instanceof HTMLElement) ||
+  !(environmentValue instanceof HTMLElement) ||
+  !(progressValue instanceof HTMLElement) ||
   !(chargesValue instanceof HTMLElement) ||
   !(powerValue instanceof HTMLElement) ||
   !(heatFill instanceof HTMLElement) ||
-  !(assistHint instanceof HTMLElement)
+  !(assistHint instanceof HTMLElement) ||
+  !(phaseProgressFill instanceof HTMLElement) ||
+  !(phaseProgressLabel instanceof HTMLElement) ||
+  !(runsValue instanceof HTMLElement) ||
+  !(avgDurationValue instanceof HTMLElement) ||
+  !(ctaValue instanceof HTMLElement)
 ) {
   throw new Error("Game DOM not found");
 }
@@ -45,6 +64,31 @@ if (!ctx) {
 }
 
 const state = createInitialState();
+const telemetry = createTelemetryStore();
+const audio = createGameAudio();
+
+function formatDuration(seconds) {
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return "0.0s";
+  }
+  return `${seconds.toFixed(1)}s`;
+}
+
+function syncTelemetryUi() {
+  const snapshot = telemetry.snapshot();
+  runsValue.textContent = String(snapshot.runStarts);
+  avgDurationValue.textContent = formatDuration(snapshot.avgRunDurationSec);
+  ctaValue.textContent = String(snapshot.ctaClicks);
+}
+
+function trackCtaClick() {
+  telemetry.trackCtaClick();
+  syncTelemetryUi();
+}
+
+for (const button of ctaButtons) {
+  button.addEventListener("click", trackCtaClick);
+}
 
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
@@ -115,15 +159,27 @@ function getHint() {
   if (state.mode === "paused") return "Juego pausado. Pulsa P, Space o toca para continuar.";
   if (state.mode === "gameover") return "Run terminada. Space/tap para reintentar al instante.";
   if (state.overheatTimer > 0) return `Overheat activo: ${state.overheatTimer.toFixed(1)}s. Juega defensivo.`;
-  return "Tip: guarda una carga para fases de alta presión.";
+  return "Tip: cada 50 puntos cambia el ambiente. Guarda una carga para el salto de fase.";
 }
 
 function syncUi() {
+  const environment = GAME_CONFIG.environments[state.environment.activeIndex] ?? GAME_CONFIG.environments[0];
+  const step = GAME_CONFIG.progression.scorePerEnvironment;
+  const progressPoints = state.score % step;
+  const pointsToNext = Math.max(0, state.environment.nextMilestone - state.score);
+
   modeValue.textContent = getModeLabel();
   scoreValue.textContent = String(state.score);
   phaseValue.textContent = String(state.difficultyPhase);
+  environmentValue.textContent = environment.label;
+  progressValue.textContent = `${progressPoints}/${step}`;
   chargesValue.textContent = `${state.charges}/2`;
   powerValue.textContent = state.ui.activePowerLabel;
+
+  phaseProgressFill.style.width = `${Math.round(state.environment.progressToNext * 100)}%`;
+  phaseProgressFill.parentElement?.setAttribute("aria-valuenow", String(Math.round(state.environment.progressToNext * 100)));
+  phaseProgressLabel.textContent = `Ambient ${state.environment.activeIndex + 1}: ${environment.label} · ${pointsToNext} pts per canvi`;
+
   const heatPercent = Math.max(0, Math.min(100, state.heat));
   heatFill.style.width = `${heatPercent}%`;
   heatFill.parentElement?.setAttribute("aria-valuenow", String(Math.round(heatPercent)));
@@ -143,6 +199,45 @@ async function toggleFullscreen() {
   await canvas.requestFullscreen();
 }
 
+function flushRuntimeEvents() {
+  const events = consumeRuntimeEvents(state);
+
+  for (const event of events) {
+    if (event.type === "flap") {
+      audio.playFlap();
+      continue;
+    }
+
+    if (event.type === "collectible-pickup") {
+      audio.playPickup();
+      continue;
+    }
+
+    if (event.type === "shield-hit") {
+      audio.playShieldHit();
+      continue;
+    }
+
+    if (event.type === "gameover") {
+      audio.playGameOver();
+      telemetry.trackRunEnd(event.runDuration);
+      syncTelemetryUi();
+      continue;
+    }
+
+    if (event.type === "run-aborted") {
+      telemetry.trackRunEnd(event.runDuration);
+      syncTelemetryUi();
+      continue;
+    }
+
+    if (event.type === "run-start") {
+      telemetry.trackRunStart();
+      syncTelemetryUi();
+    }
+  }
+}
+
 setupInput({
   state,
   canvas,
@@ -152,6 +247,9 @@ setupInput({
   onRestart: handleRestartAction,
   onTogglePause: handlePauseAction,
   onToggleFullscreen: toggleFullscreen,
+  onUserInteraction: () => {
+    audio.unlock();
+  },
 });
 
 window.addEventListener("resize", resizeCanvas);
@@ -165,6 +263,8 @@ function advanceByMs(ms) {
   for (let i = 0; i < steps; i += 1) {
     updateGame(state, FIXED_DT);
   }
+
+  flushRuntimeEvents();
   renderGame(ctx, state);
   syncUi();
 }
@@ -183,18 +283,24 @@ function frame(timestamp) {
     accumulator -= FIXED_DT;
   }
 
+  flushRuntimeEvents();
   renderGame(ctx, state);
   syncUi();
   window.requestAnimationFrame(frame);
 }
 
 attachTestingHooks({
-  getSnapshot: () => getTextSnapshot(state),
+  getSnapshot: () => ({
+    ...getTextSnapshot(state),
+    telemetry: telemetry.snapshot(),
+  }),
   advanceByMs,
   resetToMenu: restartToMenu,
+  setDebugScore: (score) => setScoreForTesting(state, score),
 });
 
 resizeCanvas();
 resetRound(state, "menu");
+syncTelemetryUi();
 syncUi();
 window.requestAnimationFrame(frame);

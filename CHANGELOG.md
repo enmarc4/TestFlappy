@@ -6,6 +6,18 @@
 - feat: actualizado `src/render.js` para renderizar personaje y obstáculos con sprites, manteniendo fallback vectorial si una imagen falla al cargar.
 - tweak: ajustada escala del sprite del personaje para mejorar legibilidad y personalidad en gameplay.
 - test: validación visual del runtime con cliente Playwright (estado `playing`/`gameover` y render correcto de sprites).
+- docs: actualizado `BACKLOG.md` y `progress.md` con plan V1.3 de progreso visual por score (cambio de ambiente cada 50 puntos, barra superior y 3 esteticas con sprites de tuberia).
+- feat: implementado sistema de ambientes por score (`50` puntos por fase) con transicion visual y `themeIndex` por obstaculo.
+- feat: añadidos 3 backgrounds de fase en `assets/backgrounds/` y sprites de tuberia por fase en `assets/sprites/phases/`.
+- feat: añadida barra de progreso superior en canvas + barra de progreso en `play-zone` para hito de ambiente.
+- feat: incorporados SFX WebAudio (`flap`, `pickup`, `shield-hit`, `gameover`) con desbloqueo por interaccion.
+- feat: añadida telemetria basica persistente (`skyCircuits.telemetry.v1`) para clicks CTA, inicios de run y duracion media.
+- feat: extendidos hooks de test con `window.setDebugScore(score)` para validar fases y arte por ambiente.
+- tweak: afinado balance de heat/power-ups (menos calor por uso, mas disipacion, menor overheat, ajuste de duraciones/pesos).
+- fix: remaquetado HUD compacto de canvas en mobile para evitar solapamientos de texto en overlays.
+- test: validacion visual de fases (`output/web-game/prio12-phase{1,2,3}.png`) y snapshots de estado por ambiente.
+- test: validacion responsive final en desktop/mobile (`output/web-game/prio12-desktop-full-v2.png`, `output/web-game/prio12-mobile-full-v2.png`).
+- docs: actualizado `progress.md` con trazabilidad completa de V1.3 y `BACKLOG.md` con P1+P2 completadas.
 
 ## 2026-02-11
 - feat: implementado juego completo "Sky Circuits: Tactical Flap" (web, Canvas, vanilla JS).

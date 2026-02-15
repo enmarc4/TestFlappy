@@ -16,6 +16,7 @@ export function setupInput({
   onRestart,
   onTogglePause,
   onToggleFullscreen,
+  onUserInteraction,
 }) {
   function usePrimaryAction() {
     if (state.mode === "gameover") {
@@ -30,6 +31,8 @@ export function setupInput({
     if (event.repeat || isTypingElement(event.target)) {
       return;
     }
+
+    onUserInteraction?.();
 
     if (event.code === "Space") {
       event.preventDefault();
@@ -63,12 +66,14 @@ export function setupInput({
 
   function handleCanvasPointerDown(event) {
     event.preventDefault();
+    onUserInteraction?.();
     canvas.focus({ preventScroll: true });
     usePrimaryAction();
   }
 
   function handlePowerPointerDown(event) {
     event.preventDefault();
+    onUserInteraction?.();
     onPower();
   }
 

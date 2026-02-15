@@ -1,6 +1,17 @@
 # Changelog
 
 ## 2026-02-15
+- feat: nuevo core de gameplay `chain_v1` (1 accion) con sistema de sincronizacion por beat (`Perfect/Sync/Offbeat`) y scoring por `Linked/Broken Sector`.
+- feat: reconversion completa de coleccionables a `Sync Anchors` (bonus de score + estabilizacion temporal de cadena).
+- feat: reconversion de power-ups manuales a pasivos automáticos de cadena (`Pulse Shield`, `Gap Widen`, `Flux Boost`), eliminando activacion manual.
+- feat: añadido bloque de config para `sync`, `chain`, `chainPassives` y tuning por ambiente; dificultad ahora escala por fase de ambiente.
+- feat: HUD de canvas rehecho para mostrar barra de beat, calidad de sync, cadena, multiplicador y pasivo activo sin añadir assets nuevos.
+- feat: input principal unificado a una sola accion (`Space/tap`), manteniendo `P`, `R`, `F` como controles de sistema.
+- feat: telemetria ampliada (`skyCircuits.telemetry.v1`) con `avg_sync_accuracy`, `avg_chain_peak`, `linked_sector_rate`.
+- feat: nuevos hooks de debug para testing determinista (`window.setDebugSync(payload)`), manteniendo `window.setDebugScore(score)`.
+- feat: copy y panel de instrucciones actualizados en `index.html` y UI externa para comunicar `SYNC + CHAIN`.
+- test: validacion Playwright del nuevo core en desktop/mobile y reporte consolidado en `output/web-game/chain-v1-validation/report.json`.
+- test: smoke de no-regresion con cliente de la skill en `output/web-game/chain-v1-smoke-final/`.
 - feat: generados sprites personalizados con `imagegen` para personaje y canonadas (raw en `output/imagegen/`).
 - feat: añadidos assets finales del runtime en `assets/sprites/` (`player.png`, `pipe-body.png`, `pipe-cap.png`).
 - feat: actualizado `src/render.js` para renderizar personaje y obstáculos con sprites, manteniendo fallback vectorial si una imagen falla al cargar.

@@ -175,3 +175,50 @@ Original prompt: Quiero hacer un juego estilo Flappy Bird, pero vamos a darle al
 ### TODO sugerido (V1.4)
 - Si se quiere mejorar accesibilidad, ofrecer toggle opcional para permitir zoom en mobile fuera de partida.
 - Añadir acceso rapido desde teclado para abrir/cerrar instrucciones (ej. tecla `I`).
+
+## 2026-02-15 - Vertical Slice Chain Core (chain_v1)
+
+### Hecho
+- Se reemplazo el core de gameplay por `chain_v1` en modo 1 accion (`Space/tap`) y se retiro la activacion manual de power-up.
+- Se implemento sistema de sincronizacion por beat (`Perfect`, `Sync`, `Offbeat`) con BPM y ventanas por ambiente.
+- Se implemento sistema de `Cadena tactica` por sectores:
+  - `Linked Sector` cuando hay taps de calidad en ventana.
+  - `Broken Sector` cuando se rompe el ritmo.
+  - Multiplicador por racha y scoring por sector.
+- Se reconvirtio el coleccionable en `Sync Anchor` (bonus + estabilizacion temporal de cadena).
+- Se reconvirtieron los power-ups a pasivos automaticos por cadena:
+  - `Pulse Shield` por umbral de sectores enlazados.
+  - `Gap Widen` por umbral de racha.
+  - `Flux Boost` tras sector perfecto.
+- Se mantuvo la progresion visual por ambientes cada `50` puntos usando los mismos assets existentes.
+- Se actualizo el HUD de canvas con barra de beat, estado de cadena, multiplicador, calidad de sync y pasivo activo.
+- Se actualizo UI externa (`index.html`, `styles.css`, `main.js`) a copy y estados `SYNC + CHAIN`.
+- Se amplian hooks y estado de test:
+  - `window.render_game_to_text` ahora incluye `sync`, `chain`, `passives`.
+  - `window.setDebugSync(payload)` para pruebas deterministas (`phase`/`seed`).
+- Se amplio telemetria local (`skyCircuits.telemetry.v1`) con:
+  - `avg_sync_accuracy`
+  - `avg_chain_peak`
+  - `linked_sector_rate`
+
+### Validacion
+- Sintaxis OK en todo `src/*.js` (`node --check`).
+- Smoke con cliente Playwright de la skill:
+  - `output/web-game/chain-v1-smoke-final/`
+- Validacion mecanica y mobile con script Playwright:
+  - `tmp/validate_chain_v1.mjs`
+  - reporte: `output/web-game/chain-v1-validation/report.json`
+  - capturas:
+    - `output/web-game/chain-v1-validation/desktop-full-chain.png`
+    - `output/web-game/chain-v1-validation/mobile-full-chain.png`
+    - `output/web-game/chain-v1-validation/desktop-canvas-chain.png`
+- Check explicito de zoom mobile: `visualViewport.scale` se mantiene `1 -> 1` tras doble tap.
+- Check explicito de ambientes por score:
+  - score 0 -> ambiente 1
+  - score 55 -> ambiente 2
+  - score 110 -> ambiente 3
+
+### TODO sugerido (Chain v1.1)
+- Ajustar tuning fino de ventanas `Perfect/Sync` tras playtest humano (sin debug).
+- Afinar umbrales pasivos para mantener runs objetivo de `60-90s` en skill media.
+- Añadir indicador visual mas fuerte de `chain-break` para aprendizaje temprano.

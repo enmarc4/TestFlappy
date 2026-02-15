@@ -10,9 +10,7 @@ function isTypingElement(target) {
 export function setupInput({
   state,
   canvas,
-  powerButton,
   onFlap,
-  onPower,
   onRestart,
   onTogglePause,
   onToggleFullscreen,
@@ -37,12 +35,6 @@ export function setupInput({
     if (event.code === "Space") {
       event.preventDefault();
       usePrimaryAction();
-      return;
-    }
-
-    if (event.code === "ShiftLeft" || event.code === "ShiftRight") {
-      event.preventDefault();
-      onPower();
       return;
     }
 
@@ -71,19 +63,11 @@ export function setupInput({
     usePrimaryAction();
   }
 
-  function handlePowerPointerDown(event) {
-    event.preventDefault();
-    onUserInteraction?.();
-    onPower();
-  }
-
   window.addEventListener("keydown", handleKeyDown);
   canvas.addEventListener("pointerdown", handleCanvasPointerDown);
-  powerButton.addEventListener("pointerdown", handlePowerPointerDown);
 
   return () => {
     window.removeEventListener("keydown", handleKeyDown);
     canvas.removeEventListener("pointerdown", handleCanvasPointerDown);
-    powerButton.removeEventListener("pointerdown", handlePowerPointerDown);
   };
 }

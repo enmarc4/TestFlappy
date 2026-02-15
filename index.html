@@ -8,7 +8,7 @@
     />
     <meta
       name="description"
-      content="Sky Circuits: Tactical Flap. Joc arcade de reflexos i decisions tàctiques amb power-ups, heat management i dificultat dinàmica."
+      content="Sky Circuits: Chain Core. Joc arcade de sincronitzacio i cadena amb una sola accio, passius automatics i canvi d'ambient cada 50 punts."
     />
     <title>Sky Circuits: Tactical Flap</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,7 +28,7 @@
         <div>
           <p class="header-kicker">Arcade tàctic aeri</p>
           <h1>Sky Circuits <span>Tactical Flap</span></h1>
-          <p class="header-copy">Partida directa. Si necessites ajuda, obre les instruccions a sota.</p>
+          <p class="header-copy">Partida directa. Una sola accio: sincronitza taps i encadena sectors.</p>
         </div>
         <div class="hero-actions">
           <a href="#play-zone" class="btn btn-primary" id="cta-play">Jugar ara</a>
@@ -40,9 +40,8 @@
           <div class="play-heading">
             <h2>Partida</h2>
             <p>
-              Controles: <strong>Space / Tap</strong> per flap, <strong>Shift / Botó</strong> per
-              power, <strong>P</strong> per pausa, <strong>R</strong> per reiniciar i
-              <strong>F</strong> per fullscreen.
+              Controles: <strong>Space / Tap</strong> per flap unic, <strong>P</strong> per pausa,
+              <strong>R</strong> per reiniciar i <strong>F</strong> per fullscreen.
             </p>
           </div>
 
@@ -60,7 +59,6 @@
 
           <div class="game-shell">
             <canvas id="game-canvas" aria-label="Sky Circuits game canvas"></canvas>
-            <button id="power-btn" type="button" aria-label="Activar power-up">Power</button>
           </div>
 
           <div class="status-grid" aria-live="polite">
@@ -69,10 +67,16 @@
             <p><span>Fase</span><strong id="phase-value">1</strong></p>
             <p><span>Ambient</span><strong id="environment-value">Stratos Labs</strong></p>
             <p><span>Progrés</span><strong id="progress-value">0/50</strong></p>
-            <p><span>Càrregues</span><strong id="charges-value">0/2</strong></p>
-            <p><span>Power actiu</span><strong id="power-value">-</strong></p>
+            <p><span>Sync</span><strong id="sync-value">-</strong></p>
+            <p><span>Cadena</span><strong id="chain-value">0</strong></p>
+            <p><span>Multiplicador</span><strong id="multiplier-value">x1.00</strong></p>
+            <p><span>Linked %</span><strong id="linked-value">0%</strong></p>
+            <p><span>Passiu</span><strong id="passive-value">-</strong></p>
             <p><span>Runs</span><strong id="runs-value">0</strong></p>
             <p><span>Duració mitjana</span><strong id="avg-duration-value">0.0s</strong></p>
+            <p><span>Sync mitjà</span><strong id="avg-sync-value">0%</strong></p>
+            <p><span>Cadena mitjana</span><strong id="avg-chain-value">0</strong></p>
+            <p><span>Linked mig</span><strong id="avg-linked-value">0%</strong></p>
             <p><span>Clicks CTA</span><strong id="cta-value">0</strong></p>
           </div>
 
@@ -95,19 +99,20 @@
             <div class="instruction-body">
               <h3>Controls</h3>
               <ul>
-                <li>Desktop: Space flap, Shift power, P pausa, R reset, F fullscreen.</li>
-                <li>Mòbil: tap al canvas per flap i botó Power per activar habilitat.</li>
+                <li>Desktop: Space flap, P pausa, R reset, F fullscreen.</li>
+                <li>Mòbil: tap al canvas per flap (1 accio).</li>
               </ul>
 
               <h3>Com progressa</h3>
               <ul>
                 <li>Cada 50 punts canvia l’ambient visual.</li>
-                <li>Recull aros per carregar habilitats (màxim 2 càrregues).</li>
-                <li>Si abuses de l’energia, entres en OVERHEAT temporal.</li>
+                <li>Taps Perfect/Sync mantenen la cadena i pugen multiplicador.</li>
+                <li>Offbeat puja el heat i pot trencar sectors.</li>
+                <li>Recull aros: son Sync Anchors (bonus i estabilitat temporal).</li>
               </ul>
 
               <h3>Consell ràpid</h3>
-              <p>Guarda una càrrega per al canvi d’ambient: normalment coincideix amb més pressió.</p>
+              <p>No facis spam de taps: busca el beat per mantenir la cadena viva.</p>
             </div>
           </details>
         </aside>

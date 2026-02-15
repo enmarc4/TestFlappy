@@ -156,7 +156,6 @@ body {
 }
 
 .btn:focus-visible,
-#power-btn:focus-visible,
 #game-canvas:focus-visible,
 summary:focus-visible {
   outline: 3px solid rgba(141, 232, 255, 0.95);
@@ -245,34 +244,6 @@ summary:focus-visible {
     0 20px 44px rgba(5, 16, 36, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.16) inset;
   touch-action: manipulation;
-}
-
-#power-btn {
-  position: absolute;
-  right: 0.8rem;
-  bottom: 0.8rem;
-  min-width: 84px;
-  min-height: 44px;
-  border: 1px solid rgba(140, 233, 255, 0.85);
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(18, 67, 112, 0.92) 0%, rgba(9, 39, 79, 0.98) 100%);
-  color: var(--text-on-dark);
-  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  box-shadow: 0 8px 24px rgba(8, 26, 62, 0.45);
-  touch-action: manipulation;
-}
-
-#power-btn:active {
-  transform: scale(0.97);
-}
-
-#power-btn:disabled {
-  opacity: 0.58;
-  filter: grayscale(0.2);
 }
 
 .status-grid {
@@ -418,10 +389,6 @@ summary:focus-visible {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  #power-btn {
-    opacity: 0.95;
-  }
-
   .site-footer a:hover,
   .site-footer a:focus-visible {
     text-decoration: underline;

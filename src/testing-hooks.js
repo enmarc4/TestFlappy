@@ -1,4 +1,4 @@
-export function attachTestingHooks({ getSnapshot, advanceByMs, resetToMenu, setDebugScore }) {
+export function attachTestingHooks({ getSnapshot, advanceByMs, resetToMenu, setDebugScore, setDebugSync }) {
   window.render_game_to_text = () => JSON.stringify(getSnapshot());
   window.advanceTime = (ms) => {
     const parsed = Number(ms);
@@ -12,6 +12,12 @@ export function attachTestingHooks({ getSnapshot, advanceByMs, resetToMenu, setD
   if (typeof setDebugScore === "function") {
     window.setDebugScore = (score) => {
       setDebugScore(score);
+    };
+  }
+
+  if (typeof setDebugSync === "function") {
+    window.setDebugSync = (payload) => {
+      setDebugSync(payload);
     };
   }
 }

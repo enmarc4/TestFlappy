@@ -51,7 +51,6 @@ function drawCoverImage(ctx, image, width, height, offsetX = 0, offsetY = 0) {
   const drawH = imageH * scale;
   const x = (width - drawW) * 0.5 + offsetX;
   const y = (height - drawH) * 0.5 + offsetY;
-
   ctx.drawImage(image, x, y, drawW, drawH);
 }
 
@@ -234,7 +233,6 @@ function drawCollectible(ctx, collectible, pulse, environment) {
   ctx.beginPath();
   ctx.arc(collectible.x, collectible.y, collectible.radius * 0.45, 0, Math.PI * 2);
   ctx.fill();
-
   ctx.restore();
 }
 
@@ -271,44 +269,12 @@ function drawPlayerFallback(ctx, player) {
   ctx.beginPath();
   ctx.arc(-2, -1, 1.7, 0, Math.PI * 2);
   ctx.fill();
-
-  ctx.fillStyle = "#ff9f2b";
-  ctx.beginPath();
-  ctx.moveTo(2, 1);
-  ctx.lineTo(9, 0);
-  ctx.lineTo(2, 4);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = "#e43526";
-  ctx.beginPath();
-  ctx.moveTo(-12, -2);
-  ctx.lineTo(-20, 4);
-  ctx.lineTo(-12, 8);
-  ctx.closePath();
-  ctx.moveTo(12, -2);
-  ctx.lineTo(20, 4);
-  ctx.lineTo(12, 8);
-  ctx.closePath();
-  ctx.fill();
-
-  const flame = 10 + Math.max(0, player.vy * 0.01);
-  const flameGradient = ctx.createLinearGradient(0, 12, 0, 24 + flame);
-  flameGradient.addColorStop(0, "#fff18b");
-  flameGradient.addColorStop(0.45, "#ff9d2f");
-  flameGradient.addColorStop(1, "#ff4b16");
-  ctx.fillStyle = flameGradient;
-  ctx.beginPath();
-  ctx.moveTo(-5, 16);
-  ctx.quadraticCurveTo(0, 26 + flame, 5, 16);
-  ctx.closePath();
-  ctx.fill();
 }
 
-function drawPlayerEffects(ctx, state) {
+function drawPlayerEffects(ctx, state, environment) {
   const { player } = state;
 
-  if (state.activePowerUp?.type === "shield" && state.shieldHitsRemaining > 0) {
+  if (state.passives.shieldCharges > 0) {
     ctx.strokeStyle = "#fff6c0";
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -320,6 +286,18 @@ function drawPlayerEffects(ctx, state) {
       Math.PI * 2
     );
     ctx.stroke();
+  }
+
+  if (state.sync.perfectPulseTimer > 0) {
+    const pulseRatio = clamp(state.sync.perfectPulseTimer / Math.max(0.001, GAME_CONFIG.sync.perfectPulseSec), 0, 1);
+    const radius = player.radius + 8 + (1 - pulseRatio) * 12;
+    ctx.globalAlpha = 0.25 + pulseRatio * 0.55;
+    ctx.strokeStyle = environment.collectible.outer;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
   }
 
   if (state.overheatTimer > 0) {
@@ -337,7 +315,7 @@ function drawPlayerEffects(ctx, state) {
   }
 }
 
-function drawPlayer(ctx, state) {
+function drawPlayer(ctx, state, environment) {
   const { player } = state;
   const wobble = Math.sin(state.totalTime * 10) * 0.12;
 
@@ -359,7 +337,7 @@ function drawPlayer(ctx, state) {
   }
 
   ctx.restore();
-  drawPlayerEffects(ctx, state);
+  drawPlayerEffects(ctx, state, environment);
 }
 
 function drawTopProgressLine(ctx, state, environment) {
@@ -413,68 +391,122 @@ function drawHudPanel(ctx, x, y, w, h, environment) {
   ctx.stroke();
 }
 
+function drawBeatBar(ctx, x, y, width, state, environment) {
+  const beatInterval = Math.max(1, state.sync.beatIntervalMs);
+  const perfectWindow = GAME_CONFIG.sync.perfectWindowMsByEnvironment[state.environment.activeIndex] ?? 70;
+  const syncWindow = GAME_CONFIG.sync.syncWindowMsByEnvironment[state.environment.activeIndex] ?? 140;
+  const perfectRatio = clamp(perfectWindow / beatInterval, 0.02, 0.32);
+  const syncRatio = clamp(syncWindow / beatInterval, perfectRatio, 0.48);
+  const beatPhase = clamp(state.sync.beatPhase, 0, 1);
+  const barHeight = 10;
+
+  ctx.fillStyle = "rgba(255,255,255,0.14)";
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, barHeight, 999);
+  ctx.fill();
+
+  const syncColor = "rgba(152, 236, 255, 0.35)";
+  const perfectColor = "rgba(255, 247, 164, 0.52)";
+
+  const drawWindow = (windowRatio, color) => {
+    const windowWidth = width * windowRatio;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, windowWidth, barHeight);
+    ctx.fillRect(x + width - windowWidth, y, windowWidth, barHeight);
+  };
+
+  drawWindow(syncRatio, syncColor);
+  drawWindow(perfectRatio, perfectColor);
+
+  const pulseGradient = ctx.createRadialGradient(
+    x + beatPhase * width,
+    y + barHeight * 0.5,
+    1,
+    x + beatPhase * width,
+    y + barHeight * 0.5,
+    14
+  );
+  pulseGradient.addColorStop(0, environment.hud.progressEnd);
+  pulseGradient.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = pulseGradient;
+  ctx.fillRect(x - 14, y - 10, width + 28, barHeight + 20);
+
+  ctx.fillStyle = environment.hud.progressEnd;
+  ctx.beginPath();
+  ctx.arc(x + beatPhase * width, y + barHeight * 0.5, 4.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
+  ctx.strokeRect(x, y, width, barHeight);
+
+  ctx.font = "700 11px 'Chakra Petch', sans-serif";
+  ctx.fillStyle = environment.hud.textSoft;
+  ctx.fillText(`SYNC ${state.sync.tapQuality.toUpperCase()} · ${state.sync.lastTapDeltaMs.toFixed(0)}ms`, x, y - 2);
+}
+
 function drawHud(ctx, state) {
   const environment = GAME_CONFIG.environments[state.environment.activeIndex] ?? GAME_CONFIG.environments[0];
   drawTopProgressLine(ctx, state, environment);
 
   const compact = state.world.width < 500;
-  const panelWidth = Math.min(compact ? 360 : 430, state.world.width - 24);
+  const panelWidth = Math.min(compact ? 370 : 432, state.world.width - 24);
   const panelX = 12;
   const panelY = 38;
-  const panelHeight = compact ? 118 : 90;
+  const panelHeight = compact ? 142 : 114;
   drawHudPanel(ctx, panelX, panelY, panelWidth, panelHeight, environment);
 
-  const heatRatio = Math.max(0, Math.min(1, state.heat / 100));
-  let barX;
-  let barY;
-  let barW;
-  const barH = 13;
+  const heatRatio = Math.max(0, Math.min(1, state.heat / GAME_CONFIG.heat.max));
+  const syncAccuracy = state.sync.tapsTotal > 0 ? (state.sync.tapsInWindow / state.sync.tapsTotal) * 100 : 0;
+  const linkedRate = state.chain.totalSectors > 0 ? (state.chain.linkedSectors / state.chain.totalSectors) * 100 : 0;
 
   ctx.fillStyle = environment.hud.text;
-
   if (compact) {
     ctx.font = "700 11px 'Chakra Petch', sans-serif";
     ctx.fillText(`Score: ${state.score}`, panelX + 10, panelY + 20);
     ctx.fillText(`Record: ${state.highScore}`, panelX + 10, panelY + 39);
-    ctx.fillText(`Cargas: ${state.charges}/2`, panelX + 124, panelY + 20);
-    ctx.fillText(`Fase: ${state.difficultyPhase}`, panelX + 124, panelY + 39);
-    ctx.fillText(`Power: ${state.ui.activePowerLabel}`, panelX + 10, panelY + 58);
-    ctx.fillText(`Hito: ${state.environment.nextMilestone}`, panelX + 124, panelY + 58);
-    barX = panelX + 10;
-    barY = panelY + 82;
-    barW = panelWidth - 20;
+    ctx.fillText(`Cadena: ${state.chain.streak}`, panelX + 124, panelY + 20);
+    ctx.fillText(`x${state.chain.multiplier.toFixed(2)}`, panelX + 124, panelY + 39);
+    ctx.fillText(`Linked: ${linkedRate.toFixed(0)}%`, panelX + 234, panelY + 20);
+    ctx.fillText(`Hito: ${state.environment.nextMilestone}`, panelX + 234, panelY + 39);
   } else {
     ctx.font = "600 16px 'Chakra Petch', sans-serif";
     ctx.fillText(`Score: ${state.score}`, panelX + 12, panelY + 24);
     ctx.fillText(`Record: ${state.highScore}`, panelX + 12, panelY + 46);
-    ctx.fillText(`Cargas: ${state.charges}/2`, panelX + 122, panelY + 24);
-    ctx.fillText(`Dificultad: ${state.difficultyPhase}`, panelX + 122, panelY + 46);
-    ctx.fillText(`Power: ${state.ui.activePowerLabel}`, panelX + 260, panelY + 24);
-    ctx.fillText(`Siguiente hito: ${state.environment.nextMilestone}`, panelX + 260, panelY + 46);
-    barX = panelX + 260;
-    barY = panelY + 56;
-    barW = 154;
+    ctx.fillText(`Cadena: ${state.chain.streak}`, panelX + 122, panelY + 24);
+    ctx.fillText(`Multiplicador: x${state.chain.multiplier.toFixed(2)}`, panelX + 122, panelY + 46);
+    ctx.fillText(`Sync OK: ${syncAccuracy.toFixed(0)}%`, panelX + 298, panelY + 24);
+    ctx.fillText(`Hito: ${state.environment.nextMilestone}`, panelX + 298, panelY + 46);
   }
 
+  const beatBarX = panelX + 10;
+  const beatBarY = compact ? panelY + 58 : panelY + 58;
+  const beatBarW = panelWidth - 20;
+  drawBeatBar(ctx, beatBarX, beatBarY, beatBarW, state, environment);
+
+  const heatBarX = panelX + 10;
+  const heatBarY = compact ? panelY + 93 : panelY + 84;
+  const heatBarW = panelWidth - 20;
+  const heatBarH = 12;
+
   ctx.fillStyle = "rgba(255, 255, 255, 0.14)";
-  ctx.fillRect(barX, barY, barW, barH);
+  ctx.fillRect(heatBarX, heatBarY, heatBarW, heatBarH);
 
   const heatR = Math.round(lerp(68, 255, heatRatio));
   const heatG = Math.round(lerp(255, 110, heatRatio));
   const heatColor = `rgb(${heatR}, ${heatG}, 75)`;
   ctx.fillStyle = heatColor;
-  ctx.fillRect(barX, barY, barW * heatRatio, barH);
+  ctx.fillRect(heatBarX, heatBarY, heatBarW * heatRatio, heatBarH);
   ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-  ctx.strokeRect(barX, barY, barW, barH);
+  ctx.strokeRect(heatBarX, heatBarY, heatBarW, heatBarH);
 
   ctx.fillStyle = environment.hud.heatLabel;
   ctx.font = "600 12px 'Chakra Petch', sans-serif";
-  ctx.fillText("Heat", barX, barY - 3);
+  ctx.fillText(`Heat · Passiu: ${state.passives.activeLabel}`, heatBarX, heatBarY - 3);
 
   if (state.overheatTimer > 0) {
     ctx.fillStyle = environment.hud.overheat;
     ctx.font = "700 14px 'Chakra Petch', sans-serif";
-    ctx.fillText(`OVERHEAT ${state.overheatTimer.toFixed(1)}s`, barX, compact ? panelY + 112 : panelY + 86);
+    ctx.fillText(`OVERHEAT ${state.overheatTimer.toFixed(1)}s`, heatBarX, compact ? panelY + 132 : panelY + 108);
   }
 }
 
@@ -493,7 +525,7 @@ function drawPhaseBadge(ctx, state) {
   const width = Math.min(360, state.world.width - 80);
   const height = 38;
   const x = (state.world.width - width) * 0.5;
-  const y = state.world.width < 500 ? 118 : 44;
+  const y = 44;
 
   ctx.save();
   ctx.globalAlpha = alpha;
@@ -557,21 +589,21 @@ function drawModeOverlay(ctx, state) {
       ctx,
       state,
       "Sky Circuits",
-      "Runs tacticas con 3 ambientes",
+      "Core chain_v1: sincronitza taps i encadena sectors",
       compact
         ? [
-            "Space o tap: flap",
-            "Shift o boton: power-up",
-            "Cada 50 puntos cambia ambiente",
-            "F: fullscreen | P: pausa",
-            "Click o Space para empezar",
+            "Space o tap: flap unic",
+            "Perfect/Sync mantenen cadena",
+            "Offbeat trenca el ritme i puja heat",
+            "Aros = Sync Anchors + estabilitat",
+            "Click o Space per empezar",
           ]
         : [
-            "Space o tap: flap",
-            "Shift o boton Power: activar power-up",
-            "Cada 50 puntos cambia el ambiente",
+            "Space o tap: unica accio",
+            "Taps Perfect/Sync alimenten la cadena",
+            "Offbeat puja heat i pot trencar sectors",
+            "Aros actuen com Sync Anchors (bonus + estabilitat)",
             "F: fullscreen | P: pausar | R: reiniciar",
-            "Click o Space para empezar",
           ]
     );
     return;
@@ -581,18 +613,18 @@ function drawModeOverlay(ctx, state) {
     drawCenterCard(
       ctx,
       state,
-      "Pausa táctica",
-      "Respira, observa y reengancha",
+      "Pausa tactica",
+      "Respira, escolta el beat i reenganxa",
       compact
         ? [
-            "Pulsa P para continuar",
-            "Space o tap reanudan la run",
-            "Planifica el próximo power-up",
+            "Pulsa P per continuar",
+            "Space o tap tambe reanuden",
+            "Busca un Perfect per rellancar cadena",
           ]
         : [
-            "Pulsa P para continuar",
-            "Space o tap también reanudan la run",
-            "Usa esta pausa para planear el próximo power-up",
+            "Pulsa P per continuar",
+            "Space o tap tambe reanuden la run",
+            "Busca un Perfect inicial per rellancar la cadena",
           ]
     );
     return;
@@ -606,14 +638,14 @@ function drawModeOverlay(ctx, state) {
       `Score ${state.score} | Record ${state.highScore}`,
       compact
         ? [
-            "Gestiona heat para evitar OVERHEAT",
-            "Recoge aros para cargar power-ups",
-            "Pulsa R, Space o tap para reiniciar",
+            "Gestiona heat per evitar OVERHEAT",
+            "Recoge aros per carregar passius",
+            "Pulsa R, Space o tap per reiniciar",
           ]
         : [
-            "Gestiona mejor el heat para evitar OVERHEAT",
-            "Busca aros en rutas de riesgo para cargar power-ups",
-            "Pulsa R, Space o tap para reiniciar",
+            "Gestiona millor el heat per evitar OVERHEAT",
+            "Busca aros en rutes de risc per estabilitzar cadena",
+            "Pulsa R, Space o tap per reiniciar",
           ]
     );
   }
@@ -627,12 +659,12 @@ export function renderGame(ctx, state) {
   }
 
   const pulse = state.totalTime * 12;
-  const activeEnvironment = GAME_CONFIG.environments[state.environment.activeIndex] ?? GAME_CONFIG.environments[0];
+  const environment = GAME_CONFIG.environments[state.environment.activeIndex] ?? GAME_CONFIG.environments[0];
   for (const collectible of state.collectibles) {
-    drawCollectible(ctx, collectible, pulse, activeEnvironment);
+    drawCollectible(ctx, collectible, pulse, environment);
   }
 
-  drawPlayer(ctx, state);
+  drawPlayer(ctx, state, environment);
   drawHud(ctx, state);
   drawPhaseBadge(ctx, state);
   drawModeOverlay(ctx, state);

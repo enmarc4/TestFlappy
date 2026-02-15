@@ -6,6 +6,10 @@ export const STORAGE_KEYS = {
 export const FIXED_DT = 1 / 60;
 
 export const GAME_CONFIG = {
+  gameplay: {
+    coreMode: "chain_v1",
+    targetRunSeconds: [60, 90],
+  },
   progression: {
     scorePerEnvironment: 50,
     transitionDuration: 0.9,
@@ -146,7 +150,7 @@ export const GAME_CONFIG = {
     gravity: 1200,
     flapImpulse: -420,
     maxFallSpeed: 620,
-    fluxGravityMultiplier: 0.72,
+    fluxGravityMultiplier: 0.76,
     overheatGravityMultiplier: 1.2,
     groundBounceDamping: 0.12,
   },
@@ -159,20 +163,53 @@ export const GAME_CONFIG = {
     maxXFactor: 0.75,
     horizontalSpring: 3.2,
     horizontalDrag: 5.5,
-    fluxPush: 320,
+    fluxPush: 300,
     invulnerabilityAfterShield: 0.35,
   },
-  powerUps: {
-    maxCharges: 2,
-    heatPerUse: 30,
-    heatDissipationPerSec: 21,
-    overheatThreshold: 100,
-    overheatDuration: 2.1,
-    pool: [
-      { type: "shield", label: "Pulse Shield", duration: 1.35, weight: 0.36 },
-      { type: "gap", label: "Gap Widen", duration: 1.85, weight: 0.34 },
-      { type: "flux", label: "Flux Boost", duration: 0.95, weight: 0.3 },
-    ],
+  sync: {
+    bpmByEnvironment: [106, 116, 128],
+    perfectWindowMsByEnvironment: [70, 62, 54],
+    syncWindowMsByEnvironment: [146, 128, 108],
+    offbeatHeatPenalty: 15,
+    syncHeatRelief: 4,
+    perfectHeatRelief: 8,
+    offbeatBreakThreshold: 3,
+    recentPerfectWindowSec: 1.5,
+    perfectPulseSec: 0.26,
+    anchorStabilitySec: 2.2,
+    sectorPerfectForFlux: 1,
+  },
+  chain: {
+    baseSectorScore: 2,
+    linkedPerfectRequired: 1,
+    brokenOffbeatThreshold: 2,
+    multiplierPerLinkedSector: 0.18,
+    multiplierMax: 3.6,
+    anchorMultiplierBonus: 0.25,
+    anchorScoreBonus: 3,
+  },
+  chainPassives: {
+    shield: {
+      linkedEvery: 2,
+      maxCharges: 2,
+      invulnerabilitySec: 0.35,
+    },
+    gap: {
+      streakThreshold: 2,
+      duration: 1.95,
+      cooldown: 5.8,
+      widenAmount: 40,
+    },
+    flux: {
+      duration: 0.86,
+      cooldown: 2.8,
+      push: 300,
+    },
+  },
+  heat: {
+    max: 100,
+    dissipatePerSec: 16,
+    overheatDurationSec: 1.8,
   },
   spawn: {
     obstacleWidthMin: 70,
@@ -180,29 +217,33 @@ export const GAME_CONFIG = {
     obstacleSpacingMin: 225,
     edgeMargin: 24,
     collectibleRadius: 12,
-    collectibleBonus: 2,
   },
   difficulty: {
-    phase1: {
-      until: 20,
-      obstacleSpeed: 180,
-      spawnInterval: 1.55,
-      gapHeight: 192,
-      collectibleChance: 0.58,
-    },
-    phase2: {
-      until: 45,
-      obstacleSpeed: 220,
-      spawnInterval: 1.32,
-      gapHeight: 170,
-      collectibleChance: 0.66,
-    },
-    phase3: {
-      until: Number.POSITIVE_INFINITY,
-      obstacleSpeed: 258,
-      spawnInterval: 1.08,
-      gapHeight: 154,
-      collectibleChance: 0.74,
-    },
+    environments: [
+      {
+        obstacleSpeed: 182,
+        spawnInterval: 1.52,
+        gapHeight: 192,
+        collectibleChance: 0.58,
+        nervousGapWobble: 0,
+        nervousGapFreq: 0,
+      },
+      {
+        obstacleSpeed: 222,
+        spawnInterval: 1.28,
+        gapHeight: 172,
+        collectibleChance: 0.66,
+        nervousGapWobble: 16,
+        nervousGapFreq: 1.85,
+      },
+      {
+        obstacleSpeed: 258,
+        spawnInterval: 1.08,
+        gapHeight: 154,
+        collectibleChance: 0.74,
+        nervousGapWobble: 24,
+        nervousGapFreq: 2.2,
+      },
+    ],
   },
 };

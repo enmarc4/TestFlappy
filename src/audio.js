@@ -108,6 +108,72 @@ export function createGameAudio() {
     });
   }
 
+  function playSyncPerfect() {
+    const ctx = ensureContext();
+    playTone(ctx, {
+      type: "triangle",
+      frequency: 650,
+      endFrequency: 920,
+      duration: 0.07,
+      gain: 0.055,
+      release: 0.09,
+    });
+    playTone(ctx, {
+      type: "sine",
+      frequency: 880,
+      endFrequency: 1120,
+      duration: 0.06,
+      gain: 0.04,
+      when: 0.03,
+      release: 0.08,
+    });
+  }
+
+  function playSyncOffbeat() {
+    const ctx = ensureContext();
+    playTone(ctx, {
+      type: "square",
+      frequency: 210,
+      endFrequency: 170,
+      duration: 0.08,
+      gain: 0.04,
+      release: 0.08,
+    });
+  }
+
+  function playChainBreak() {
+    const ctx = ensureContext();
+    playTone(ctx, {
+      type: "sawtooth",
+      frequency: 320,
+      endFrequency: 170,
+      duration: 0.13,
+      gain: 0.05,
+      release: 0.11,
+    });
+  }
+
+  function playPassiveTrigger() {
+    const ctx = ensureContext();
+    playTone(ctx, {
+      type: "triangle",
+      frequency: 360,
+      endFrequency: 520,
+      duration: 0.06,
+      gain: 0.04,
+      release: 0.08,
+    });
+    playTone(ctx, {
+      type: "triangle",
+      frequency: 460,
+      endFrequency: 640,
+      duration: 0.07,
+      gain: 0.045,
+      when: 0.04,
+      release: 0.09,
+    });
+  }
+
   function playShieldHit() {
     const ctx = ensureContext();
     playTone(ctx, {
@@ -136,6 +202,10 @@ export function createGameAudio() {
     unlock,
     playFlap,
     playPickup,
+    playSyncPerfect,
+    playSyncOffbeat,
+    playChainBreak,
+    playPassiveTrigger,
     playShieldHit,
     playGameOver,
   };

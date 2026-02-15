@@ -2,6 +2,35 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
+function loadSprite(src) {
+  const image = new Image();
+  const sprite = {
+    image,
+    ready: false,
+    failed: false,
+  };
+
+  image.addEventListener("load", () => {
+    sprite.ready = true;
+  });
+  image.addEventListener("error", () => {
+    sprite.failed = true;
+  });
+  image.src = src;
+
+  return sprite;
+}
+
+function canDrawSprite(sprite) {
+  return sprite.ready && !sprite.failed;
+}
+
+const SPRITES = {
+  player: loadSprite(new URL("../assets/sprites/player.png", import.meta.url).href),
+  pipeBody: loadSprite(new URL("../assets/sprites/pipe-body.png", import.meta.url).href),
+  pipeCap: loadSprite(new URL("../assets/sprites/pipe-cap.png", import.meta.url).href),
+};
+
 function drawBackground(ctx, state) {
   const { width, height } = state.world;
 
@@ -30,7 +59,7 @@ function drawBackground(ctx, state) {
   }
 }
 
-function drawObstacle(ctx, obstacle, state) {
+function drawObstacleFallback(ctx, obstacle, state) {
   const topHeight = obstacle.gapY - obstacle.gapHeight * 0.5;
   const bottomY = obstacle.gapY + obstacle.gapHeight * 0.5;
   const bottomHeight = state.world.height - bottomY;
@@ -90,6 +119,41 @@ function drawObstacle(ctx, obstacle, state) {
   drawRocketPipe(obstacle.x, bottomY, bottomHeight, true);
 }
 
+function drawPipeCap(ctx, x, y, width, height, flipped) {
+  ctx.save();
+  ctx.translate(x + width * 0.5, y + height * 0.5);
+  if (flipped) {
+    ctx.rotate(Math.PI);
+  }
+  ctx.drawImage(SPRITES.pipeCap.image, -width * 0.5, -height * 0.5, width, height);
+  ctx.restore();
+}
+
+function drawObstacle(ctx, obstacle, state) {
+  if (!canDrawSprite(SPRITES.pipeBody)) {
+    drawObstacleFallback(ctx, obstacle, state);
+    return;
+  }
+
+  const topHeight = obstacle.gapY - obstacle.gapHeight * 0.5;
+  const bottomY = obstacle.gapY + obstacle.gapHeight * 0.5;
+  const bottomHeight = state.world.height - bottomY;
+
+  ctx.drawImage(SPRITES.pipeBody.image, obstacle.x, 0, obstacle.width, topHeight);
+  ctx.drawImage(SPRITES.pipeBody.image, obstacle.x, bottomY, obstacle.width, bottomHeight);
+
+  if (!canDrawSprite(SPRITES.pipeCap)) {
+    return;
+  }
+
+  const capWidth = obstacle.width * 1.36;
+  const capHeight = capWidth * (SPRITES.pipeCap.image.height / SPRITES.pipeCap.image.width);
+  const capX = obstacle.x - (capWidth - obstacle.width) * 0.5;
+
+  drawPipeCap(ctx, capX, topHeight - capHeight * 0.52, capWidth, capHeight, true);
+  drawPipeCap(ctx, capX, bottomY - capHeight * 0.48, capWidth, capHeight, false);
+}
+
 function drawCollectible(ctx, collectible, pulse) {
   const ringRadius = collectible.radius + Math.sin(pulse) * 1.8;
 
@@ -107,19 +171,7 @@ function drawCollectible(ctx, collectible, pulse) {
   ctx.restore();
 }
 
-function drawPlayer(ctx, state) {
-  const { player } = state;
-  const wobble = Math.sin(state.totalTime * 10) * 0.08;
-
-  ctx.save();
-  ctx.translate(player.x, player.y);
-  ctx.rotate(Math.max(-0.32, Math.min(0.45, player.vy / 780)) + wobble);
-
-  if (state.invulnerabilityTimer > 0) {
-    ctx.shadowColor = "#ffd95d";
-    ctx.shadowBlur = 15;
-  }
-
+function drawPlayerFallback(ctx, player) {
   const rocketBody = ctx.createLinearGradient(-16, -10, 16, 20);
   rocketBody.addColorStop(0, "#c6d2dc");
   rocketBody.addColorStop(0.45, "#f4f7fb");
@@ -184,12 +236,22 @@ function drawPlayer(ctx, state) {
   ctx.quadraticCurveTo(0, 26 + flame, 5, 16);
   ctx.closePath();
   ctx.fill();
+}
+
+function drawPlayerEffects(ctx, state) {
+  const { player } = state;
 
   if (state.activePowerUp?.type === "shield" && state.shieldHitsRemaining > 0) {
     ctx.strokeStyle = "#fff6c0";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(0, 0, player.radius + 8 + Math.sin(state.totalTime * 16) * 1.5, 0, Math.PI * 2);
+    ctx.arc(
+      player.x,
+      player.y,
+      player.radius + 8 + Math.sin(state.totalTime * 16) * 1.5,
+      0,
+      Math.PI * 2
+    );
     ctx.stroke();
   }
 
@@ -197,11 +259,46 @@ function drawPlayer(ctx, state) {
     ctx.strokeStyle = "#ff6037";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(0, 0, player.radius + 11 + Math.sin(state.totalTime * 18) * 1.5, 0, Math.PI * 2);
+    ctx.arc(
+      player.x,
+      player.y,
+      player.radius + 11 + Math.sin(state.totalTime * 18) * 1.5,
+      0,
+      Math.PI * 2
+    );
     ctx.stroke();
+  }
+}
+
+function drawPlayer(ctx, state) {
+  const { player } = state;
+  const wobble = Math.sin(state.totalTime * 10) * 0.12;
+
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.rotate(Math.max(-0.38, Math.min(0.38, player.vy / 800)) + wobble);
+
+  if (state.invulnerabilityTimer > 0) {
+    ctx.shadowColor = "#83ffef";
+    ctx.shadowBlur = 15;
+  }
+
+  if (canDrawSprite(SPRITES.player)) {
+    const spriteWidth = (player.radius + 7) * 3.4;
+    const spriteHeight = spriteWidth * (SPRITES.player.image.height / SPRITES.player.image.width);
+    ctx.drawImage(
+      SPRITES.player.image,
+      -spriteWidth * 0.54,
+      -spriteHeight * 0.5,
+      spriteWidth,
+      spriteHeight
+    );
+  } else {
+    drawPlayerFallback(ctx, player);
   }
 
   ctx.restore();
+  drawPlayerEffects(ctx, state);
 }
 
 function drawHudPanel(ctx, x, y, w, h) {

@@ -68,3 +68,30 @@ Original prompt: Quiero hacer un juego estilo Flappy Bird, pero vamos a darle al
 - Añadir CTA secundario para iniciar run y hacer scroll/focus directo al canvas.
 - Incorporar telemetria basica de interaccion en landing (click CTA, scroll depth, inicio de run).
 - Ajustar copy de onboarding dentro del canvas para alinearlo al mensaje de la landing.
+
+## 2026-02-15 - Sprites personalizados (V1.2)
+
+### Hecho
+- Se generaron nuevos assets visuales con la skill `imagegen` usando `scripts/image_gen.py`:
+  - Personaje (drone-colibri estilizado).
+  - Cuerpo de canonada.
+  - Boca/cap de canonada.
+- Se guardaron los renders base en `output/imagegen/` y se prepararon assets runtime en `assets/sprites/`.
+- Se actualizo `src/render.js` para:
+  - Cargar sprites al iniciar (`player`, `pipe-body`, `pipe-cap`).
+  - Renderizar obstáculos con sprites (cuerpo + cap), incluyendo top/bottom.
+  - Renderizar personaje con sprite rotado segun velocidad vertical.
+  - Mantener fallback vectorial si algun sprite no carga.
+- Se ajusto el tamaño final del sprite del personaje para mejorar lectura en pantalla y personalidad visual.
+
+### Validacion
+- Se ejecuto test con cliente Playwright en local y se revisaron capturas de runtime con estado `playing` y `gameover`.
+- Se verifico que:
+  - Los obstáculos se dibujan con el nuevo look de canonada.
+  - El personaje usa el sprite nuevo durante vuelo.
+  - No hay bloqueo del loop si fallara la carga de imagen (fallback activo).
+
+### TODO sugerido (V1.3)
+- Añadir una pequena animacion de alas/propulsor (2-3 frames) para dar mas vida al personaje.
+- Generar variante visual de canonada por fase de dificultad (fase 1/2/3) para reforzar feedback de progreso.
+- Añadir un collectible sprite tematico (aro tecnologico) para homogeneidad estetica con personaje y canonadas.

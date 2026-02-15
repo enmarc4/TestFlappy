@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-02-15
+- feat: generados sprites personalizados con `imagegen` para personaje y canonadas (raw en `output/imagegen/`).
+- feat: añadidos assets finales del runtime en `assets/sprites/` (`player.png`, `pipe-body.png`, `pipe-cap.png`).
+- feat: actualizado `src/render.js` para renderizar personaje y obstáculos con sprites, manteniendo fallback vectorial si una imagen falla al cargar.
+- tweak: ajustada escala del sprite del personaje para mejorar legibilidad y personalidad en gameplay.
+- test: validación visual del runtime con cliente Playwright (estado `playing`/`gameover` y render correcto de sprites).
+
 ## 2026-02-11
 - feat: implementado juego completo "Sky Circuits: Tactical Flap" (web, Canvas, vanilla JS).
 - feat: loop de juego con menu -> run -> game over, reinicio inmediato y fullscreen.

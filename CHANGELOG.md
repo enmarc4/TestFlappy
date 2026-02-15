@@ -18,6 +18,11 @@
 - test: validacion visual de fases (`output/web-game/prio12-phase{1,2,3}.png`) y snapshots de estado por ambiente.
 - test: validacion responsive final en desktop/mobile (`output/web-game/prio12-desktop-full-v2.png`, `output/web-game/prio12-mobile-full-v2.png`).
 - docs: actualizado `progress.md` con trazabilidad completa de V1.3 y `BACKLOG.md` con P1+P2 completadas.
+- feat: refactor de `index.html` + `styles.css` a experiencia `game-first` (el juego pasa a ser la pantalla principal).
+- feat: añadidas instrucciones colapsables (`details/summary`) para ver ayuda solo bajo demanda.
+- fix: deshabilitado zoom molesto en mobile (meta viewport con `user-scalable=no` + guard anti doble tap en `src/main.js`).
+- test: validacion visual game-first en desktop/mobile (`output/web-game/game-first-desktop-full.png`, `output/web-game/game-first-mobile-full.png`).
+- test: comprobacion de escala tras doble tap en mobile emulado (sin cambio de escala: `1 -> 1`).
 
 ## 2026-02-11
 - feat: implementado juego completo "Sky Circuits: Tactical Flap" (web, Canvas, vanilla JS).

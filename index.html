@@ -1,11 +1,14 @@
 <!doctype html>
-<html lang="es">
+<html lang="ca">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
     <meta
       name="description"
-      content="Sky Circuits: Tactical Flap. Un arcade de reflejos y decisiones tácticas con power-ups, heat management y dificultad dinámica."
+      content="Sky Circuits: Tactical Flap. Joc arcade de reflexos i decisions tàctiques amb power-ups, heat management i dificultat dinàmica."
     />
     <title>Sky Circuits: Tactical Flap</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,136 +24,98 @@
     <div class="bg-orb orb-b" aria-hidden="true"></div>
 
     <div class="site-shell">
-      <header class="hero" id="top">
-        <div class="hero-copy">
-          <p class="hero-kicker">Arcade táctico aéreo</p>
+      <header class="game-header" id="top">
+        <div>
+          <p class="header-kicker">Arcade tàctic aeri</p>
           <h1>Sky Circuits <span>Tactical Flap</span></h1>
-          <p>
-            No se trata solo de esquivar obstáculos. Cada run combina precisión, lectura del ritmo y
-            gestión de calor para decidir cuándo atacar con power-ups y cuándo conservar energía.
-          </p>
-          <div class="hero-actions">
-            <a href="#play-zone" class="btn btn-primary" id="cta-play">Entrar a la partida</a>
-            <a href="#feature-grid" class="btn btn-ghost" id="cta-mechanics">Ver mecánicas</a>
-          </div>
-          <ul class="hero-highlights">
-            <li>
-              <strong>3</strong>
-              <span>Power-ups tácticos</span>
-            </li>
-            <li>
-              <strong>60 FPS</strong>
-              <span>Simulación estable</span>
-            </li>
-            <li>
-              <strong>∞</strong>
-              <span>Runs con escalado dinámico</span>
-            </li>
-          </ul>
+          <p class="header-copy">Partida directa. Si necessites ajuda, obre les instruccions a sota.</p>
         </div>
-
-        <aside class="hero-panel" aria-label="Resumen de mecánicas">
-          <h2>Diferencial de gameplay</h2>
-          <ul class="tag-list">
-            <li>Pulse Shield</li>
-            <li>Gap Widen</li>
-            <li>Flux Boost</li>
-            <li>Heat Meter</li>
-            <li>Risk Routing</li>
-            <li>Overheat Control</li>
-          </ul>
-          <p>
-            Sky Circuits transforma el bucle clásico con una capa de decisiones en tiempo real: usar o
-            guardar recursos cambia totalmente el tempo de la partida.
-          </p>
-        </aside>
+        <div class="hero-actions">
+          <a href="#play-zone" class="btn btn-primary" id="cta-play">Jugar ara</a>
+        </div>
       </header>
 
-      <main class="landing-content">
-        <section class="feature-grid" id="feature-grid" aria-label="Características principales">
-          <article class="feature-card">
-            <h3>Riesgo recompensado</h3>
-            <p>
-              Las cargas aparecen en rutas peligrosas. Si juegas al límite, acumulas ventaja táctica.
-            </p>
-          </article>
-          <article class="feature-card">
-            <h3>Heat como recurso</h3>
-            <p>
-              El motor se sobrecalienta si abusas del flap. Controlar ese umbral define las runs largas.
-            </p>
-          </article>
-          <article class="feature-card">
-            <h3>Escalada viva</h3>
-            <p>
-              El ritmo acelera por fases, no por picos bruscos. Exige adaptación continua y decisiones
-              limpias.
-            </p>
-          </article>
-        </section>
-
-        <section class="flow-strip" aria-label="Flujo de juego">
-          <div class="flow-step">
-            <span>01</span>
-            <h3>Flap y lectura</h3>
-            <p>Mantén altura y anticipa gaps para no gastar recursos antes de tiempo.</p>
-          </div>
-          <div class="flow-step">
-            <span>02</span>
-            <h3>Acumula cargas</h3>
-            <p>Recoge energía en trayectorias de riesgo para habilitar jugadas ofensivas.</p>
-          </div>
-          <div class="flow-step">
-            <span>03</span>
-            <h3>Activa poder</h3>
-            <p>Lanza power-ups en ventanas críticas y rompe segmentos de alta presión.</p>
-          </div>
-          <div class="flow-step">
-            <span>04</span>
-            <h3>Sobrevive al late game</h3>
-            <p>En fases finales, precisión y gestión de calor pesan más que la velocidad.</p>
-          </div>
-        </section>
-
+      <main class="game-main">
         <section class="play-zone" id="play-zone">
           <div class="play-heading">
-            <h2>Demo jugable</h2>
+            <h2>Partida</h2>
             <p>
-              Controles: <strong>Space / Tap</strong> para flap, <strong>Shift / Botón</strong> para
-              power, <strong>P</strong> para pausar, <strong>R</strong> para reinicio y <strong>F</strong>
-              para fullscreen.
+              Controles: <strong>Space / Tap</strong> per flap, <strong>Shift / Botó</strong> per
+              power, <strong>P</strong> per pausa, <strong>R</strong> per reiniciar i
+              <strong>F</strong> per fullscreen.
             </p>
           </div>
-          <div class="phase-progress" role="progressbar" aria-label="Progreso de ambiente" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+
+          <div
+            class="phase-progress"
+            role="progressbar"
+            aria-label="Progrés d'ambient"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
             <div class="phase-progress-fill" id="phase-progress-fill"></div>
           </div>
           <p class="phase-progress-label" id="phase-progress-label">Ambient 1 · 50 pts per canvi</p>
+
           <div class="game-shell">
             <canvas id="game-canvas" aria-label="Sky Circuits game canvas"></canvas>
             <button id="power-btn" type="button" aria-label="Activar power-up">Power</button>
           </div>
+
           <div class="status-grid" aria-live="polite">
-            <p><span>Modo</span><strong id="mode-value">Menú</strong></p>
+            <p><span>Mode</span><strong id="mode-value">Menú</strong></p>
             <p><span>Score</span><strong id="score-value">0</strong></p>
             <p><span>Fase</span><strong id="phase-value">1</strong></p>
-            <p><span>Ambiente</span><strong id="environment-value">Stratos Labs</strong></p>
-            <p><span>Progreso</span><strong id="progress-value">0/50</strong></p>
-            <p><span>Cargas</span><strong id="charges-value">0/2</strong></p>
-            <p><span>Power activo</span><strong id="power-value">-</strong></p>
+            <p><span>Ambient</span><strong id="environment-value">Stratos Labs</strong></p>
+            <p><span>Progrés</span><strong id="progress-value">0/50</strong></p>
+            <p><span>Càrregues</span><strong id="charges-value">0/2</strong></p>
+            <p><span>Power actiu</span><strong id="power-value">-</strong></p>
             <p><span>Runs</span><strong id="runs-value">0</strong></p>
-            <p><span>Duración media</span><strong id="avg-duration-value">0.0s</strong></p>
+            <p><span>Duració mitjana</span><strong id="avg-duration-value">0.0s</strong></p>
             <p><span>Clicks CTA</span><strong id="cta-value">0</strong></p>
           </div>
-          <div class="heat-meter" role="meter" aria-label="Nivel de calor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+
+          <div
+            class="heat-meter"
+            role="meter"
+            aria-label="Nivell de calor"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
             <div class="heat-meter-bar" id="heat-fill"></div>
           </div>
-          <p class="assist-hint" id="assist-hint">Pulsa Space o toca el canvas para empezar.</p>
+          <p class="assist-hint" id="assist-hint">Pulsa Space o toca el canvas per començar.</p>
         </section>
+
+        <aside class="instruction-panel" aria-label="Instruccions">
+          <details class="instruction-details" id="instructions-panel">
+            <summary>Veure instruccions</summary>
+            <div class="instruction-body">
+              <h3>Controls</h3>
+              <ul>
+                <li>Desktop: Space flap, Shift power, P pausa, R reset, F fullscreen.</li>
+                <li>Mòbil: tap al canvas per flap i botó Power per activar habilitat.</li>
+              </ul>
+
+              <h3>Com progressa</h3>
+              <ul>
+                <li>Cada 50 punts canvia l’ambient visual.</li>
+                <li>Recull aros per carregar habilitats (màxim 2 càrregues).</li>
+                <li>Si abuses de l’energia, entres en OVERHEAT temporal.</li>
+              </ul>
+
+              <h3>Consell ràpid</h3>
+              <p>Guarda una càrrega per al canvi d’ambient: normalment coincideix amb més pressió.</p>
+            </div>
+          </details>
+        </aside>
       </main>
 
       <footer class="site-footer">
         <p>Sky Circuits · Tactical Flap</p>
-        <a href="#top">Volver arriba</a>
+        <a href="#top">Pujar</a>
       </footer>
     </div>
 

@@ -67,6 +67,35 @@ const state = createInitialState();
 const telemetry = createTelemetryStore();
 const audio = createGameAudio();
 
+function setupMobileZoomGuard() {
+  const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  if (!hasCoarsePointer) {
+    return;
+  }
+
+  let lastTouchEnd = 0;
+  document.addEventListener(
+    "touchend",
+    (event) => {
+      const now = performance.now();
+      if (now - lastTouchEnd < 280) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    },
+    { passive: false }
+  );
+
+  // iOS Safari pinch/double-tap fallback.
+  document.addEventListener(
+    "gesturestart",
+    (event) => {
+      event.preventDefault();
+    },
+    { passive: false }
+  );
+}
+
 function formatDuration(seconds) {
   if (!Number.isFinite(seconds) || seconds <= 0) {
     return "0.0s";
@@ -301,6 +330,7 @@ attachTestingHooks({
 
 resizeCanvas();
 resetRound(state, "menu");
+setupMobileZoomGuard();
 syncTelemetryUi();
 syncUi();
 window.requestAnimationFrame(frame);

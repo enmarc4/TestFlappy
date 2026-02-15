@@ -4,13 +4,13 @@
   --bg-ocean: #1369b0;
   --bg-deep: #042b4f;
   --ink-strong: #02111f;
-  --ink-soft: #0f2f4a;
-  --card-bg: rgba(255, 255, 255, 0.72);
-  --card-border: rgba(3, 51, 84, 0.2);
-  --card-shadow: rgba(3, 26, 46, 0.18);
+  --ink-soft: #d6f4ff;
+  --card-bg: rgba(7, 39, 74, 0.82);
+  --card-border: rgba(135, 233, 255, 0.42);
+  --card-shadow: rgba(3, 26, 46, 0.28);
   --accent-main: #ff6b2d;
   --accent-main-strong: #f24e05;
-  --accent-cool: #0078d0;
+  --accent-cool: #43d7ff;
   --canvas-border: rgba(133, 236, 255, 0.86);
   --text-on-dark: #f0fbff;
 }
@@ -23,13 +23,15 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  touch-action: manipulation;
 }
 
 body {
   position: relative;
   overflow-x: hidden;
-  color: var(--ink-strong);
+  color: var(--text-on-dark);
   font-family: "Sora", "Avenir Next", "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
   background:
     radial-gradient(circle at 7% 14%, rgba(255, 255, 255, 0.42) 0, rgba(255, 255, 255, 0) 25%),
     radial-gradient(circle at 85% 10%, rgba(199, 251, 255, 0.42) 0, rgba(199, 251, 255, 0) 28%),
@@ -66,89 +68,87 @@ body {
 .site-shell {
   position: relative;
   z-index: 1;
-  width: min(1120px, 94vw);
+  width: min(1200px, 95vw);
   margin: 0 auto;
-  padding: 1.2rem 0 2.1rem;
-}
-
-.hero {
+  padding: 1rem 0 1.4rem;
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 1.2rem;
-  align-items: stretch;
+  gap: 0.9rem;
 }
 
-.hero-copy,
-.hero-panel,
-.feature-card,
-.flow-step,
+.game-header,
 .play-zone,
+.instruction-panel,
 .site-footer {
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--card-border);
   box-shadow: 0 14px 34px var(--card-shadow);
+  border-radius: 20px;
 }
 
-.hero-copy {
-  border-radius: 28px;
+.game-header {
   background: var(--card-bg);
-  padding: clamp(1.3rem, 2.8vw, 2rem);
-  animation: rise 0.65s ease-out both;
+  padding: 0.95rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
 }
 
-.hero-kicker {
+.header-kicker {
   margin: 0;
   font-family: "Chakra Petch", "Franklin Gothic Medium", sans-serif;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-cool);
+  color: #9befff;
+  font-size: 0.76rem;
 }
 
-.hero-copy h1 {
-  margin: 0.38rem 0 0;
+.game-header h1 {
+  margin: 0.12rem 0 0;
   font-family: "Bungee", "Impact", sans-serif;
-  line-height: 1.08;
-  font-size: clamp(2rem, 5vw, 3.7rem);
+  line-height: 1.04;
+  font-size: clamp(1.52rem, 4.2vw, 2.35rem);
   letter-spacing: 0.02em;
 }
 
-.hero-copy h1 span {
-  display: block;
+.game-header h1 span {
+  display: inline-block;
+  margin-left: 0.5rem;
   font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
-  font-size: clamp(1rem, 2vw, 1.4rem);
-  letter-spacing: 0.14em;
+  font-size: clamp(0.74rem, 1.7vw, 1rem);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: #beefff;
 }
 
-.hero-copy > p {
-  margin: 0.9rem 0 0;
-  max-width: 62ch;
-  line-height: 1.68;
-  color: rgba(2, 17, 31, 0.85);
+.header-copy {
+  margin: 0.32rem 0 0;
+  color: rgba(228, 249, 255, 0.92);
+  font-size: 0.93rem;
 }
 
 .hero-actions {
-  margin-top: 1.2rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 0.7rem 1.2rem;
+  min-height: 44px;
+  padding: 0.66rem 1.04rem;
   border-radius: 999px;
   border: 1px solid transparent;
   text-decoration: none;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   letter-spacing: 0.03em;
-  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  touch-action: manipulation;
 }
 
 .btn:hover {
@@ -157,8 +157,9 @@ body {
 
 .btn:focus-visible,
 #power-btn:focus-visible,
-#game-canvas:focus-visible {
-  outline: 3px solid rgba(141, 232, 255, 0.9);
+#game-canvas:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(141, 232, 255, 0.95);
   outline-offset: 2px;
 }
 
@@ -168,245 +169,32 @@ body {
   box-shadow: 0 10px 22px rgba(196, 78, 20, 0.34);
 }
 
-.btn-ghost {
-  color: var(--ink-strong);
-  background: rgba(255, 255, 255, 0.48);
-  border-color: rgba(3, 51, 84, 0.2);
-}
-
-.hero-highlights {
-  margin: 1.2rem 0 0;
-  padding: 0;
-  list-style: none;
+.game-main {
   display: grid;
-  gap: 0.65rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.hero-highlights li {
-  border-radius: 14px;
-  background: rgba(4, 43, 79, 0.08);
-  border: 1px solid rgba(4, 43, 79, 0.14);
-  padding: 0.7rem 0.65rem;
-}
-
-.hero-highlights strong {
-  display: block;
-  font-family: "Bungee", "Impact", sans-serif;
-  font-size: clamp(1.05rem, 2.2vw, 1.36rem);
-  line-height: 1;
-}
-
-.hero-highlights span {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.01em;
-  color: rgba(2, 17, 31, 0.72);
-}
-
-.hero-panel {
-  border-radius: 24px;
-  background: linear-gradient(160deg, rgba(4, 43, 79, 0.88) 0%, rgba(12, 86, 140, 0.84) 100%);
-  color: var(--text-on-dark);
-  padding: 1.1rem 1rem;
-  animation: rise 0.65s ease-out both;
-  animation-delay: 90ms;
-}
-
-.hero-panel h2 {
-  margin: 0;
-  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  font-size: 1.03rem;
-}
-
-.tag-list {
-  margin: 0.9rem 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.tag-list li {
-  padding: 0.42rem 0.66rem;
-  border-radius: 999px;
-  font-size: 0.76rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border: 1px solid rgba(186, 242, 255, 0.45);
-  background: rgba(9, 111, 178, 0.35);
-}
-
-.hero-panel p {
-  margin: 0;
-  line-height: 1.64;
-  color: rgba(240, 251, 255, 0.9);
-}
-
-.landing-content {
-  margin-top: 1.1rem;
-  display: grid;
-  gap: 1rem;
-}
-
-.feature-grid {
-  display: grid;
-  gap: 0.8rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.feature-card {
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.62);
-  padding: 1.05rem;
-  animation: rise 0.65s ease-out both;
-}
-
-.feature-card:nth-child(2) {
-  animation-delay: 110ms;
-}
-
-.feature-card:nth-child(3) {
-  animation-delay: 180ms;
-}
-
-.feature-card h3 {
-  margin: 0;
-  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.98rem;
-}
-
-.feature-card p {
-  margin: 0.62rem 0 0;
-  color: rgba(2, 17, 31, 0.8);
-  line-height: 1.58;
-}
-
-.flow-strip {
-  display: grid;
-  gap: 0.68rem;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.flow-step {
-  border-radius: 18px;
-  background: rgba(4, 43, 79, 0.76);
-  color: var(--text-on-dark);
-  padding: 0.9rem 0.82rem;
-  animation: rise 0.65s ease-out both;
-}
-
-.flow-step:nth-child(2) {
-  animation-delay: 90ms;
-}
-
-.flow-step:nth-child(3) {
-  animation-delay: 150ms;
-}
-
-.flow-step:nth-child(4) {
-  animation-delay: 210ms;
-}
-
-.flow-step span {
-  font-family: "Bungee", "Impact", sans-serif;
-  font-size: 0.94rem;
-  color: #8de8ff;
-}
-
-.flow-step h3 {
-  margin: 0.35rem 0 0;
-  font-size: 0.88rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.flow-step p {
-  margin: 0.46rem 0 0;
-  line-height: 1.5;
-  font-size: 0.83rem;
-  color: rgba(240, 251, 255, 0.86);
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 0.9rem;
+  align-items: start;
 }
 
 .play-zone {
-  border-radius: 28px;
-  background: linear-gradient(160deg, rgba(4, 43, 79, 0.88) 0%, rgba(8, 62, 104, 0.88) 100%);
+  background: linear-gradient(160deg, rgba(4, 43, 79, 0.9) 0%, rgba(8, 62, 104, 0.9) 100%);
   color: var(--text-on-dark);
-  padding: 1rem;
-}
-
-.status-grid {
-  margin-top: 0.9rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 0.56rem;
-}
-
-.status-grid p {
-  margin: 0;
-  padding: 0.62rem 0.65rem;
-  border-radius: 12px;
-  background: rgba(155, 235, 255, 0.1);
-  border: 1px solid rgba(155, 235, 255, 0.32);
-  display: grid;
-  gap: 0.2rem;
-}
-
-.status-grid span {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(234, 252, 255, 0.75);
-}
-
-.status-grid strong {
-  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
-  font-size: 0.98rem;
-  color: #f2ffff;
-}
-
-.heat-meter {
-  margin-top: 0.7rem;
-  width: 100%;
-  height: 12px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.24);
-}
-
-.heat-meter-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #77f98c 0%, #f0eb54 56%, #ff623b 100%);
-  transition: width 130ms ease;
-}
-
-.assist-hint {
-  margin: 0.7rem 0 0;
-  color: rgba(237, 253, 255, 0.9);
-  font-size: 0.9rem;
-  line-height: 1.45;
+  padding: 0.95rem;
 }
 
 .play-heading h2 {
   margin: 0;
   font-family: "Bungee", "Impact", sans-serif;
-  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+  font-size: clamp(1.18rem, 2.4vw, 1.56rem);
   letter-spacing: 0.04em;
 }
 
 .play-heading p {
-  margin: 0.55rem 0 0;
-  max-width: 72ch;
-  line-height: 1.58;
+  margin: 0.4rem 0 0;
+  max-width: 70ch;
+  line-height: 1.52;
   color: rgba(240, 251, 255, 0.92);
+  font-size: 0.9rem;
 }
 
 .play-heading strong {
@@ -433,15 +221,15 @@ body {
 
 .phase-progress-label {
   margin: 0.45rem 0 0;
-  font-size: 0.83rem;
+  font-size: 0.82rem;
   letter-spacing: 0.03em;
   color: rgba(233, 252, 255, 0.92);
 }
 
 .game-shell {
   position: relative;
-  width: min(100%, 1020px);
-  margin: 0.95rem auto 0;
+  width: 100%;
+  margin: 0.72rem auto 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -451,7 +239,7 @@ body {
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 2px solid var(--canvas-border);
-  border-radius: 22px;
+  border-radius: 18px;
   display: block;
   box-shadow:
     0 20px 44px rgba(5, 16, 36, 0.4),
@@ -461,20 +249,21 @@ body {
 
 #power-btn {
   position: absolute;
-  right: 0.9rem;
-  bottom: 0.9rem;
-  min-width: 88px;
-  min-height: 46px;
+  right: 0.8rem;
+  bottom: 0.8rem;
+  min-width: 84px;
+  min-height: 44px;
   border: 1px solid rgba(140, 233, 255, 0.85);
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(18, 67, 112, 0.92) 0%, rgba(9, 39, 79, 0.98) 100%);
   color: var(--text-on-dark);
   font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   box-shadow: 0 8px 24px rgba(8, 26, 62, 0.45);
+  touch-action: manipulation;
 }
 
 #power-btn:active {
@@ -486,11 +275,128 @@ body {
   filter: grayscale(0.2);
 }
 
+.status-grid {
+  margin-top: 0.76rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 0.5rem;
+}
+
+.status-grid p {
+  margin: 0;
+  padding: 0.56rem 0.6rem;
+  border-radius: 11px;
+  background: rgba(155, 235, 255, 0.1);
+  border: 1px solid rgba(155, 235, 255, 0.32);
+  display: grid;
+  gap: 0.2rem;
+}
+
+.status-grid span {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(234, 252, 255, 0.75);
+}
+
+.status-grid strong {
+  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
+  font-size: 0.9rem;
+  color: #f2ffff;
+}
+
+.heat-meter {
+  margin-top: 0.7rem;
+  width: 100%;
+  height: 11px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.heat-meter-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #77f98c 0%, #f0eb54 56%, #ff623b 100%);
+  transition: width 130ms ease;
+}
+
+.assist-hint {
+  margin: 0.62rem 0 0;
+  color: rgba(237, 253, 255, 0.9);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.instruction-panel {
+  background: rgba(7, 39, 74, 0.82);
+  padding: 0.82rem;
+}
+
+.instruction-details {
+  border: 1px solid rgba(140, 234, 255, 0.33);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(7, 29, 62, 0.72);
+}
+
+.instruction-details summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
+  font-size: 0.93rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.76rem 0.8rem;
+  background: rgba(61, 208, 255, 0.14);
+  color: #d5f8ff;
+  touch-action: manipulation;
+}
+
+.instruction-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.instruction-details[open] summary {
+  border-bottom: 1px solid rgba(140, 234, 255, 0.32);
+}
+
+.instruction-body {
+  padding: 0.8rem;
+}
+
+.instruction-body h3 {
+  margin: 0 0 0.44rem;
+  font-family: "Chakra Petch", "Trebuchet MS", sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: #8de8ff;
+}
+
+.instruction-body h3:not(:first-child) {
+  margin-top: 0.78rem;
+}
+
+.instruction-body ul {
+  margin: 0;
+  padding-left: 1.02rem;
+  display: grid;
+  gap: 0.36rem;
+}
+
+.instruction-body li,
+.instruction-body p {
+  margin: 0;
+  color: rgba(236, 251, 255, 0.93);
+  line-height: 1.45;
+  font-size: 0.84rem;
+}
+
 .site-footer {
-  margin-top: 1rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.55);
-  padding: 0.72rem 0.82rem;
+  background: rgba(7, 39, 74, 0.72);
+  padding: 0.64rem 0.82rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -499,20 +405,21 @@ body {
 
 .site-footer p {
   margin: 0;
-  font-size: 0.9rem;
-  color: rgba(2, 17, 31, 0.82);
+  font-size: 0.84rem;
+  color: rgba(226, 249, 255, 0.92);
 }
 
 .site-footer a {
   color: var(--accent-cool);
   text-decoration: none;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
+  touch-action: manipulation;
 }
 
 @media (hover: hover) and (pointer: fine) {
   #power-btn {
-    opacity: 0.94;
+    opacity: 0.95;
   }
 
   .site-footer a:hover,
@@ -521,73 +428,84 @@ body {
   }
 }
 
-@media (max-width: 980px) {
-  .hero {
+@media (max-width: 1050px) {
+  .game-main {
     grid-template-columns: 1fr;
   }
 
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .status-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .flow-strip {
-    grid-template-columns: 1fr 1fr;
+  .instruction-panel {
+    order: 2;
   }
 }
 
 @media (max-width: 640px) {
   .site-shell {
-    width: min(1120px, 95vw);
-    padding-top: 0.95rem;
+    width: min(1200px, 96vw);
+    padding-top: 0.8rem;
+    gap: 0.72rem;
   }
 
-  .hero-copy,
-  .hero-panel,
-  .play-zone {
-    border-radius: 20px;
-    padding: 0.9rem;
+  .game-header,
+  .play-zone,
+  .instruction-panel,
+  .site-footer {
+    border-radius: 16px;
   }
 
-  .hero-highlights {
-    grid-template-columns: 1fr;
+  .game-header {
+    padding: 0.78rem 0.76rem;
   }
 
-  .flow-strip {
-    grid-template-columns: 1fr;
+  .header-copy {
+    font-size: 0.82rem;
+    max-width: 36ch;
   }
 
-  .status-grid {
-    grid-template-columns: 1fr;
+  .hero-actions {
+    width: 100%;
   }
 
   .btn {
     width: 100%;
   }
 
-  .game-shell {
-    width: min(100%, 420px);
+  .play-zone {
+    padding: 0.72rem;
+  }
+
+  .play-heading p {
+    font-size: 0.8rem;
   }
 
   #game-canvas {
     aspect-ratio: 9 / 16;
-    max-height: 72vh;
+    max-height: 74vh;
   }
 
-  #power-btn {
-    right: 0.75rem;
-    bottom: 0.75rem;
-    min-width: 84px;
-    min-height: 44px;
-    font-size: 0.94rem;
+  .status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .status-grid strong {
+    font-size: 0.86rem;
   }
 
   .site-footer {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.32rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-header h1 span {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.2rem;
   }
 }
 
@@ -608,17 +526,5 @@ body {
 
   50% {
     transform: translate3d(0, -18px, 0);
-  }
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

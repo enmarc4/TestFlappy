@@ -148,3 +148,30 @@ Original prompt: Quiero hacer un juego estilo Flappy Bird, pero vamos a darle al
 - Anadir un modo diario (`daily seed`) con ranking local para reforzar rejugabilidad.
 - Evaluar una animacion ligera del sprite del player (2-3 frames) para feedback de propulsion.
 - Registrar telemetria adicional de cambio de ambiente (tiempo hasta hito, score por fase).
+
+## 2026-02-15 - Game-first UI + anti-zoom mobile
+
+### Hecho
+- Se separo la landing de presentacion del flujo principal:
+  - `index.html` pasa a priorizar la partida como primer bloque visible.
+  - Se eliminan secciones largas de marketing del flujo inicial.
+- Se anadieron instrucciones bajo demanda en panel colapsable (`details/summary`) para no interrumpir la entrada al juego.
+- Se mantuvo intacta la integracion runtime del juego (`#game-canvas`, `#power-btn`, HUD y telemetria).
+- Se simplifico y rehizo `styles.css` para layout game-first desktop/mobile.
+- Se implemento bloqueo de zoom molesto en mobile:
+  - Meta viewport con `maximum-scale=1` y `user-scalable=no`.
+  - Guard JS anti doble tap en `src/main.js` (`touchend` + fallback `gesturestart` en iOS).
+
+### Validacion
+- Smoke test de runtime con Playwright (sin regresiones de loop/estado):
+  - `output/web-game/game-first-smoke/`
+- Validacion visual game-first:
+  - Desktop full page: `output/web-game/game-first-desktop-full.png`
+  - Mobile full page: `output/web-game/game-first-mobile-full.png`
+- Validacion funcional de instrucciones colapsables (closed -> open) en mobile emulado.
+- Validacion de anti-zoom doble tap en mobile emulado:
+  - `visualViewport.scale` antes/despues: `1 -> 1`.
+
+### TODO sugerido (V1.4)
+- Si se quiere mejorar accesibilidad, ofrecer toggle opcional para permitir zoom en mobile fuera de partida.
+- Añadir acceso rapido desde teclado para abrir/cerrar instrucciones (ej. tecla `I`).
